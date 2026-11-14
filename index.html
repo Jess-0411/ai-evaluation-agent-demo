@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI评价智能体 · 评价管理系统</title>
+  <style>
+    :root{--green:#18b889;--green-dark:#109a72;--green-soft:#e3f7ef;--ink:#30373e;--muted:#8b939c;--line:#e7ebee;--canvas:#f8f9fb;--white:#fff}
+    *{box-sizing:border-box}body{margin:0;font-family:"Microsoft YaHei","PingFang SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;color:var(--ink);background:var(--canvas)}button,textarea,select{font:inherit}button{cursor:pointer}button,select,textarea{-webkit-tap-highlight-color:transparent}button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #9ce2ca;outline-offset:3px}button:disabled{cursor:not-allowed}button{color:inherit}svg{display:block;flex-shrink:0}.icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}[hidden]{display:none!important}
+    .shell{min-height:100vh;display:grid;grid-template-columns:164px minmax(0,1fr)}.sidebar{background:#fff;border-right:1px solid var(--line);padding:0 8px;position:sticky;top:0;height:100vh}.brand{height:55px;display:flex;align-items:center;padding-left:10px;font-size:15px;font-weight:700;letter-spacing:.4px}.side-nav{display:flex;flex-direction:column;gap:5px;padding-top:8px}.nav-item{height:42px;display:flex;align-items:center;gap:10px;padding:0 12px;font-size:13px;white-space:nowrap;color:#505960}.nav-item .chevron{margin-left:auto;width:12px;height:12px;color:#99a1a8}.nav-item.active{background:var(--green-soft);border-radius:6px;color:var(--green-dark);font-weight:500}.sidebar-foot{position:absolute;bottom:20px;left:20px;right:20px;display:flex;align-items:center;gap:7px;font-size:11px;color:#a8afb6}.sidebar-foot:before{content:"";width:5px;height:5px;border-radius:50%;background:#bdc7cc}.workspace{min-width:0}.topbar{height:42px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #f1f3f5}.home-pill{border:0;background:var(--green);color:#fff;border-radius:20px;padding:5px 13px;font-size:12px;display:inline-flex;align-items:center;gap:5px}.account{display:flex;align-items:center;gap:10px;font-size:12px;color:#6b737b}.avatar{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#edf0f3;color:#9098a0}.cloud-link{padding-left:12px;border-left:1px solid var(--line)}.route-tabs{height:38px;padding:6px 14px;display:flex;gap:6px;align-items:center;overflow:auto;scrollbar-width:none;background:#f3f5f7}.route-tab{display:flex;align-items:center;gap:13px;white-space:nowrap;padding:4px 9px;border:1px solid #e5e8eb;background:white;border-radius:3px;font-size:11px;color:#6f7780}.route-tab.active{background:var(--green);border-color:var(--green);color:#fff}.tab-close{font-size:13px;opacity:.55}.page-heading{height:60px;padding:0 26px;display:flex;align-items:center;justify-content:space-between;gap:25px;background:#fff;border-bottom:1px solid var(--line)}.page-heading h1{display:flex;align-items:center;gap:9px;font-size:14px;margin:0;font-weight:600;white-space:nowrap}.back-arrow{color:var(--green);width:16px}.steps{list-style:none;display:flex;align-items:center;gap:27px;padding:0;margin:0;height:100%;font-size:12px;color:#9ba2aa}.step{display:flex;align-items:center;gap:7px;position:relative;height:100%;white-space:nowrap}.step-number{width:19px;height:19px;border:1px solid #e2e6e9;border-radius:50%;display:grid;place-items:center;font-size:10px;color:#9da5ae}.step.active{color:var(--green-dark);font-weight:600}.step.active .step-number{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 2px 5px #18b88926}.step.active:after{position:absolute;content:"";height:2px;background:var(--green);bottom:0;left:-6px;right:-6px}.step-banner{height:35px;display:flex;align-items:center;padding:0 26px;background:#f0fcf7;border-bottom:1px solid #e5f4ed;color:#5e6b69;font-size:12px}.stage{max-width:1080px;margin:0 auto;padding:35px 40px 64px}.agent-heading{text-align:center;margin-bottom:25px}.agent-symbol{margin:0 auto 13px;width:54px;height:54px;position:relative;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#dff9ee,#f7fffc);border:1px solid #d4eee4;color:var(--green);box-shadow:0 5px 18px #159a7210}.agent-symbol:before{content:"";position:absolute;inset:5px;border:1px solid #ffffffc9;border-radius:13px}.agent-symbol svg{width:29px;height:29px;position:relative}.agent-heading h2{margin:0;font-size:27px;font-weight:600;letter-spacing:.3px;color:#2c373e}.agent-heading p{margin:9px 0 0;font-size:12px;color:#929aa3;letter-spacing:.4px}
+    .request-builder{display:flex;flex-wrap:wrap;align-items:center;gap:15px 18px;padding-bottom:20px;border-bottom:1px solid var(--line)}.analysis-grid{display:contents}.analysis-group{position:relative;min-width:0;display:inline-flex;align-items:center;gap:8px}.group-label{display:flex;align-items:center;white-space:nowrap;font-size:12px;font-weight:400;color:#7b858d}.group-label .icon{display:none}.select-trigger{width:auto;min-width:106px;max-width:180px;height:36px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #e1e7e8;border-radius:7px;background:#fff;text-align:left;font-size:13px;transition:border-color .15s,background .15s}.select-trigger:hover{border-color:#8bd8bc}.select-trigger.has-selection{background:#f4fcf8;color:var(--green-dark);border-color:#bce8d6}.select-trigger[aria-expanded="true"]{border-color:var(--green);box-shadow:0 0 0 3px #18b8890a}.select-trigger .trigger-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.select-trigger .icon{width:13px;height:13px;color:#a5aeb3;transition:transform .15s}.select-trigger[aria-expanded="true"] .icon{transform:rotate(180deg);color:var(--green)}.select-trigger:not(.has-selection) .trigger-text{color:#a8afb5}.select-menu{position:absolute;top:calc(100% + 8px);left:0;width:max(100%,230px);z-index:40;background:#fff;border:1px solid #e4eae7;border-radius:10px;padding:7px;box-shadow:0 10px 36px #263f3524}.analysis-group:last-child .select-menu{left:auto;right:0}.analysis-group.open-up .select-menu{top:auto;bottom:calc(100% + 8px)}.menu-tools{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 10px;margin-bottom:3px;border-bottom:1px solid #f0f3f2}.menu-title{font-size:11px;color:#929c9a}.menu-actions{display:flex;gap:12px}.text-action{border:0;background:transparent;color:var(--green-dark);padding:0;font-size:12px}.text-action:hover{text-decoration:underline}.menu-option{display:flex;align-items:center;gap:9px;min-height:39px;border-radius:6px;padding:9px 9px;cursor:pointer;font-size:13px;line-height:1.45}.menu-option:hover{background:#f5f9f7}.menu-option.selected{background:var(--green-soft);color:var(--green-dark)}.menu-option+.menu-option{margin-top:3px}.menu-option input{margin:0;accent-color:var(--green);width:15px;height:15px;flex-shrink:0;cursor:pointer}.menu-option:focus-within{outline:2px solid #98dfc4;outline-offset:-2px}.menu-option input:focus-visible{outline:none}
+    .composer{background:#fff;border:1px solid #e2e7ec;border-radius:12px;padding:20px 22px 16px;transition:border-color .15s;box-shadow:0 4px 16px #253e4c02}.composer:focus-within{border-color:#b4dfcd}.subject-row{display:flex;align-items:center;gap:8px;font-size:14px;line-height:26px;white-space:nowrap;flex-shrink:0}.student-select{display:inline-flex;align-items:center;position:relative}.student-select select{border:1px solid #cbe8dc;border-radius:7px;color:var(--green-dark);appearance:none;-webkit-appearance:none;background:#f4fcf8;min-width:105px;height:36px;padding:0 27px 0 11px;cursor:pointer;max-width:180px}.student-select .icon{width:12px;height:12px;position:absolute;right:9px;pointer-events:none;color:var(--green)}.summary-label{display:flex;align-items:center;gap:6px;font-size:11px;color:#99a3ac;margin:17px 0 7px}.summary-label:before{content:"";width:3px;height:10px;border-radius:2px;background:#a9d9c6}.summary{font-size:14px;line-height:1.9;margin:0;min-height:32px;overflow-wrap:anywhere;color:#4d5b65}.summary.empty{color:#a3abb3}.note-divider{margin-top:16px;padding-top:13px;border-top:1px dashed #e9edef}.notes{width:100%;resize:vertical;min-height:61px;max-height:210px;border:0;background:transparent;outline:none;padding:0;font-size:13px;line-height:1.8;color:#4d5b65}.notes::placeholder{color:#afb6bd}.notes:focus-visible{outline:none}.composer-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:13px}.thinking-toggle{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:#fff;border:1px solid #e2e9e6;color:#929d99;border-radius:6px;font-size:12px;white-space:nowrap;transition:all .15s}.thinking-toggle .icon{width:15px;height:15px}.thinking-toggle:hover{border-color:#87d9ba;color:var(--green-dark)}.thinking-toggle[aria-pressed="true"]{border-color:#a9e2cb;color:var(--green-dark);background:#effbf5}.thinking-state{font-size:10px;padding-left:5px;border-left:1px solid #dce6e0;color:inherit}.send-area{display:flex;align-items:center;gap:14px}.selection-status{font-size:11px;color:#9ba4ab;line-height:1.5;text-align:right}.send-button{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:50%;background:var(--green);color:#fff;transition:background .15s,transform .15s;flex-shrink:0}.send-button:hover:not(:disabled){background:var(--green-dark);transform:translateY(-1px)}.send-button:disabled{background:#f1f3f4;color:#c3c9cc}.send-button .icon{width:21px;height:21px}.keyboard-hint{font-size:10px;color:#a9b1b8;text-align:right;margin:8px 2px 0}
+    .result-card{margin-top:17px;border:1px solid #cceadc;background:linear-gradient(145deg,#fcfffd,#f5fcf8);border-radius:12px;padding:20px 22px;overflow-wrap:anywhere}.result-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.result-heading h3{display:flex;align-items:center;gap:7px;margin:0;color:#268563;font-size:14px;font-weight:600}.result-heading h3 .icon{width:18px;height:18px}.result-heading h3:focus{outline:none}.result-meta{display:flex;align-items:center;gap:12px}.demo-badge{font-size:10px;color:#759b89;background:#edf7f1;border:1px solid #dceee3;border-radius:4px;padding:3px 6px}.close-result{font-size:11px;border:0;background:transparent;color:#8b9d93;padding:3px}.close-result:hover{color:var(--green-dark)}.result-summary{margin:0;color:#496253;font-size:13px;line-height:1.85}.result-details{display:grid;grid-template-columns:1fr auto;gap:16px;border-top:1px solid #e2eee6;padding-top:13px;margin-top:13px}.result-details dt{font-size:11px;color:#90a195;margin-bottom:5px}.result-details dd{font-size:12px;line-height:1.7;margin:0;color:#597263;white-space:pre-wrap}.result-details dl{margin:0;min-width:0}.result-details dl:last-child{min-width:78px}
+    .templates{margin-top:30px}.templates-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}.templates-heading h3{font-size:14px;font-weight:600;margin:0 0 6px}.templates-heading p{font-size:11px;color:#9ba3aa;margin:0}.history-button{display:flex;align-items:center;gap:5px;border:0;background:transparent;font-size:12px;color:#7b858c;padding:6px 0 6px 8px;white-space:nowrap}.history-button:hover{color:var(--green-dark)}.history-button .icon{width:14px;height:14px}.template-card{width:168px;background:#fff;border:1px solid #b9dfce;border-radius:8px;padding:0;display:block;overflow:hidden;box-shadow:0 3px 10px #29473b07;text-align:left}.template-card:hover{border-color:var(--green);box-shadow:0 4px 16px #29473b13}.template-art{display:block;width:100%;height:188px;background:#f7fbff}.template-caption{padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #e1eee8;font-size:11px;color:#4c6f60;background:#f4fbf7}.template-caption .icon{width:14px;height:14px;color:var(--green)}.page-foot{display:flex;justify-content:center;align-items:center;gap:5px;margin-top:24px;font-size:10px;color:#afb7bc}.page-foot .icon{width:12px;height:12px}
+    .toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,10px);padding:10px 17px;border:1px solid #dcebe2;background:white;box-shadow:0 6px 24px #263e341c;border-radius:7px;font-size:12px;color:#4f7b65;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}.toast.visible{opacity:1;transform:translate(-50%,0)}dialog{border:1px solid var(--line);border-radius:12px;box-shadow:0 15px 65px #203d3426;padding:0;width:min(440px,calc(100vw - 40px));color:var(--ink)}dialog::backdrop{background:#1e302c38;backdrop-filter:blur(2px)}.dialog-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}.dialog-header h3{font-size:15px;margin:0}.dialog-close{border:0;background:transparent;color:#939da3;padding:3px}.dialog-close .icon{width:18px;height:18px}.empty-history{padding:39px 20px 43px;text-align:center}.empty-history>.icon{width:35px;height:35px;margin:0 auto 15px;color:#b8c9c2;stroke-width:1.2}.empty-history p{font-size:13px;margin:0 0 8px;color:#788b81}.empty-history small{font-size:11px;color:#a5aea9}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .select-menu{max-height:min(340px,calc(100dvh - 32px));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#d6e3dc transparent}.menu-tools{position:sticky;top:-7px;background:#fff;z-index:1}
+    @media(min-width:1700px){.stage{padding-top:46px}.agent-heading{margin-bottom:29px}.agent-symbol{width:60px;height:60px}.agent-heading h2{font-size:28px}}
+    @media(max-width:1200px){.steps{gap:18px}.stage{padding-right:28px;padding-left:28px}.request-builder{column-gap:14px}.select-trigger{padding:0 9px}}
+    @media(max-width:1099px){.request-builder{gap:14px 18px}.steps{gap:12px;font-size:11px}.step{gap:5px}.page-heading{padding:0 20px}.stage{padding-top:30px}}
+    @media(max-width:820px){.shell{grid-template-columns:66px minmax(0,1fr)}.brand{font-size:0;padding:0;justify-content:center}.brand:after{content:"评";font-size:18px;color:var(--green-dark)}.nav-item{justify-content:center;padding:0;gap:0}.nav-item>span,.nav-item .chevron,.sidebar-foot{display:none}.nav-item .icon{width:20px;height:20px}.page-heading{height:auto;min-height:66px;flex-wrap:wrap;padding-top:12px;padding-bottom:10px;gap:12px}.steps{width:100%;height:30px;justify-content:space-between;gap:7px}.step.active:after{bottom:-4px}.topbar{padding:0 16px}.cloud-link{display:none}.stage{padding:25px 20px 40px}.account{gap:6px}}
+    @media(max-width:590px){.request-builder{gap:13px 16px}.analysis-group{flex-wrap:wrap;gap:6px}.select-trigger{min-width:105px}.stage{padding-left:12px;padding-right:12px}.composer{padding:17px 15px 14px}.agent-heading h2{font-size:23px}.select-menu{width:max(100%,210px)}.analysis-group:nth-child(even) .select-menu{left:auto;right:0}.analysis-group:last-child .select-menu{left:0;right:auto}.selection-status{max-width:150px}.send-area{gap:8px}.steps .step-number{display:none}.steps{font-size:10px}.thinking-toggle{gap:4px;padding:6px}.thinking-state{display:none}.route-tabs{padding-left:8px}.page-heading,.step-banner{padding-left:16px}.result-card{padding:18px 15px}.demo-badge{display:none}.result-details{grid-template-columns:1fr}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+    .topbar-actions{display:flex;align-items:center;gap:18px}.prd-open-button{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border:1px solid #b9e6d5;border-radius:6px;background:#effaf5;color:var(--green-dark);font-size:12px;font-weight:500;white-space:nowrap}.prd-open-button:hover{background:var(--green-soft);border-color:var(--green)}.prd-open-button .icon{width:14px;height:14px}body.prd-modal-open{overflow:hidden}
+    dialog.prd-dialog{width:min(1180px,calc(100vw - 48px));height:min(900px,88dvh);max-width:none;max-height:calc(100dvh - 40px);border:1px solid #e0e9e4;border-radius:14px;overflow:hidden;padding:0;background:#fff;box-shadow:0 22px 80px #193b3238}dialog.prd-dialog[open]{display:flex;flex-direction:column}.prd-dialog::backdrop{background:#243c3659;backdrop-filter:blur(3px)}.prd-dialog-header{display:flex;align-items:flex-start;justify-content:space-between;gap:22px;padding:22px 26px 17px;border-bottom:1px solid var(--line);flex-shrink:0}.prd-title-block{min-width:0}.prd-title-block h2{display:flex;align-items:center;gap:9px;margin:0 0 7px;font-size:19px;font-weight:600;color:#2b3c35}.prd-title-block h2 .icon{width:21px;height:21px;color:var(--green)}.prd-title-block p{margin:0;color:#8a9991;font-size:11px;line-height:1.6}.prd-dialog-tools{display:flex;align-items:center;gap:8px;flex-shrink:0}.prd-tool-button{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:31px;padding:0 10px;border:1px solid #e1e9e5;border-radius:6px;background:#fff;font-size:12px;color:#697d71;white-space:nowrap}.prd-tool-button:hover{color:var(--green-dark);border-color:#a6dac3;background:#f5fcf8}.prd-tool-button:disabled{opacity:.55}.prd-tool-button .icon{width:14px;height:14px}.prd-close-button{width:31px;padding:0;color:#929e97}.prd-close-button .icon{width:17px;height:17px}.prd-body{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:0;flex:1}.prd-sidebar{padding:23px 15px 18px 18px;border-right:1px solid var(--line);background:#fafcfb;overflow-y:auto;overscroll-behavior:contain}.prd-sidebar-title{font-size:11px;font-weight:500;color:#94a297;margin:0 10px 13px;letter-spacing:.6px}.prd-navigation{display:flex;flex-direction:column;gap:5px}.prd-navigation a{display:block;color:#687d70;text-decoration:none;padding:9px 11px;border-radius:6px;font-size:12px;line-height:1.6}.prd-navigation a:hover{background:#edf6f0;color:var(--green-dark)}.prd-navigation a[aria-current="location"]{background:#e3f5eb;color:#168b62;font-weight:500}.prd-sidebar-meta{font-size:10px;line-height:1.9;color:#a0aaa4;margin:21px 10px 0;padding-top:15px;border-top:1px solid #e8eeea}.prd-reading-pane{min-width:0;overflow:auto;overscroll-behavior:contain;padding:25px 30px 38px;scrollbar-width:thin;scrollbar-color:#d5e2d9 transparent;scroll-behavior:smooth}.prd-document{font-size:13px;line-height:1.85;color:#4b5d51;overflow-wrap:anywhere}.prd-document>p{margin:0 0 14px}.prd-document>p:first-child{font-size:20px;line-height:1.6;margin-bottom:10px;color:#2c4235}.prd-document h2{font-size:18px;color:#253f30;font-weight:600;margin:31px 0 15px;padding:0 0 10px;border-bottom:1px solid #e6eee8;scroll-margin-top:10px}.prd-document h3{font-size:14px;font-weight:600;color:#385b46;margin:23px 0 12px;scroll-margin-top:10px}.prd-document h2:focus,.prd-document h3:focus{outline:none}.prd-document strong{font-weight:600;color:#3e5847}.prd-document ul,.prd-document ol{padding-left:22px;margin:10px 0 17px}.prd-document li{margin:6px 0;padding-left:2px}.prd-document code{padding:2px 5px;font-family:Consolas,"SFMono-Regular",monospace;font-size:12px;background:#f1f6f3;color:#3b7255;border-radius:4px;overflow-wrap:anywhere}.prd-document pre{padding:16px 18px;margin:15px 0 20px;background:#f5f8f6;border:1px solid #e3eae5;border-radius:8px;overflow:auto;line-height:1.65;tab-size:2}.prd-document pre code{padding:0;background:none;color:#3d5948;white-space:pre;overflow-wrap:normal}.prd-table-wrap{max-width:100%;overflow-x:auto;margin:14px 0 22px;border:1px solid #e1e9e3;border-radius:7px;scrollbar-width:thin;scrollbar-color:#d5e2d9 transparent}.prd-table{width:100%;min-width:640px;border-collapse:collapse;font-size:12px;line-height:1.8}.prd-table th{padding:10px 11px;text-align:left;vertical-align:top;background:#f0f7f2;color:#4d6a56;font-weight:600;border-bottom:1px solid #dce7df;white-space:nowrap}.prd-table td{padding:10px 11px;vertical-align:top;border-bottom:1px solid #e8eee9;border-right:1px solid #edf1ee}.prd-table td:last-child{border-right:0}.prd-table tbody tr:last-child td{border-bottom:0}.prd-table tbody tr:nth-child(even){background:#fcfdfc}.prd-assumption{font-size:11px;color:#997239}.prd-dialog-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:38px;padding:8px 26px;border-top:1px solid var(--line);background:#fcfdfc;font-size:10px;color:#98a59c;flex-shrink:0}.prd-action-status{min-height:15px;color:var(--green-dark)}
+    @media(max-width:820px){.topbar-actions{gap:12px}dialog.prd-dialog{width:calc(100vw - 24px);height:92dvh;max-height:calc(100dvh - 24px)}.prd-dialog-header{padding:17px 18px 14px;gap:12px}.prd-title-block h2{font-size:16px}.prd-title-block p{font-size:10px}.prd-body{grid-template-columns:180px minmax(0,1fr)}.prd-sidebar{padding:18px 10px}.prd-navigation a{font-size:11px;padding:8px}.prd-reading-pane{padding:20px}.prd-dialog-footer{padding-left:18px;padding-right:18px}}
+    @media(max-width:590px){.topbar-actions{gap:8px}.prd-open-button{padding:0 8px}.prd-dialog-header{flex-wrap:wrap}.prd-dialog-tools{margin-left:auto}.prd-body{display:flex;flex-direction:column}.prd-sidebar{border-right:0;border-bottom:1px solid var(--line);padding:8px 12px;overflow-y:hidden;overflow-x:auto;flex-shrink:0}.prd-sidebar-title,.prd-sidebar-meta{display:none}.prd-navigation{flex-direction:row;gap:5px;width:max-content}.prd-navigation a{white-space:nowrap;padding:7px 9px}.prd-reading-pane{padding:16px 18px 25px;flex:1}.prd-document{font-size:12px}.prd-document h2{font-size:16px}.prd-dialog-footer>span:last-child{display:none}}
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden"><defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
+    <symbol id="i-checklist" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v4H9zM8 12l2 2 5-5M9 18h6"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9M12 15C4 15 3 11 3 6c6 0 9 2 9 7M12 11c0-6 3-8 9-8 0 6-3 9-9 9"/></symbol>
+    <symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="10" cy="6" rx="7" ry="3"/><path d="M3 6v5c0 4 14 4 14 0V6M3 11v5c0 4 14 4 14 0v-5M21 10v8c0 2-4 3-7 3"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="15" rx="3"/><path d="M8 6V3h8v3M8 11c0 5 8 5 8 0"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V11h5v9M9 20V4h5v16M14 20v-7h5v7M2 20h20"/></symbol>
+    <symbol id="i-device" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></symbol>
+    <symbol id="i-agent" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="15" rx="4"/><path d="M12 3v3M8 12h.01M16 12h.01M8 17h8M1 11v5M23 11v5"/><circle cx="12" cy="2" r="1"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="m10 5-7 7 7 7M3 12h18"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 20V4m-7 7 7-7 7 7"/></symbol>
+    <symbol id="i-radar" viewBox="0 0 24 24"><path d="m12 2 9.5 7-3.6 11H6.1L2.5 9Z"/><path d="m12 7 5 4-2 5H9l-2-5Z"/></symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/><circle cx="12" cy="12" r="4"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5c-3-2-6-2-10-1v15c4-1 7-1 10 1 3-2 6-2 10-1V4c-4-1-7-1-10 1Zm0 0v15"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 8-3 8-3 9h18c0-1-3-1-3-9M9 21h6"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 19h18M4 15l5-5 4 3 7-9M15 4h5v5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></symbol>
+    <symbol id="i-thinking" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="11" ry="4.5" transform="rotate(45 12 12)"/><ellipse cx="12" cy="12" rx="11" ry="4.5" transform="rotate(-45 12 12)"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 1 7M3 4v6h6M12 7v6l4 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H5v20h14V7zM14 2v6h5M8 12h8M8 16h6"/></symbol>
+  </defs></svg>
+  <div class="shell">
+    <aside class="sidebar" aria-label="系统导航">
+      <div class="brand">评价管理系统</div>
+      <nav class="side-nav">
+        <div class="nav-item"><svg class="icon"><use href="#i-home"/></svg><span>首页</span></div>
+        <div class="nav-item"><svg class="icon"><use href="#i-checklist"/></svg><span>评价管理</span><svg class="icon chevron"><use href="#i-down"/></svg></div>
+        <div class="nav-item"><svg class="icon"><use href="#i-sprout"/></svg><span>成长体系</span><svg class="icon chevron"><use href="#i-down"/></svg></div>
+        <div class="nav-item"><svg class="icon"><use href="#i-coins"/></svg><span>积分资产</span><svg class="icon chevron"><use href="#i-down"/></svg></div>
+        <div class="nav-item"><svg class="icon"><use href="#i-bag"/></svg><span>兑换记录</span></div>
+        <div class="nav-item"><svg class="icon"><use href="#i-chart"/></svg><span>排行榜</span></div>
+        <div class="nav-item"><svg class="icon"><use href="#i-device"/></svg><span>设备管理</span><svg class="icon chevron"><use href="#i-down"/></svg></div>
+        <div class="nav-item active" aria-current="page"><svg class="icon"><use href="#i-agent"/></svg><span>AI评价智能体</span></div>
+      </nav>
+      <div class="sidebar-foot">评价管理 · PC端</div>
+    </aside>
+    <main class="workspace">
+      <header class="topbar">
+        <button class="home-pill" type="button" data-demo-action="当前为AI评价智能体独立演示页面"><svg class="icon" style="width:12px;height:12px"><use href="#i-arrow-left"/></svg>返回首页</button>
+        <div class="topbar-actions"><div class="account"><span class="avatar" aria-hidden="true">侯</span><span>侯老师</span><span class="cloud-link">前往云平台</span></div><button class="prd-open-button" type="button" id="prdButton" aria-haspopup="dialog" aria-controls="prdDialog" title="查看本页完整研发需求文档"><svg class="icon" aria-hidden="true"><use href="#i-doc"/></svg>PRD说明</button></div>
+      </header>
+      <div class="route-tabs" aria-label="页面页签">
+        <span class="route-tab">首页</span><span class="route-tab">评价类型<span class="tab-close">×</span></span><span class="route-tab">评价规则<span class="tab-close">×</span></span><span class="route-tab">评价记录<span class="tab-close">×</span></span><span class="route-tab">积分卡管理<span class="tab-close">×</span></span><span class="route-tab active">AI评价智能体<span class="tab-close">×</span></span><span class="route-tab">评价活动<span class="tab-close">×</span></span>
+      </div>
+      <div class="page-heading">
+        <h1><svg class="icon back-arrow"><use href="#i-arrow-left"/></svg>报告详情</h1>
+        <ol class="steps" aria-label="报告生成步骤">
+          <li class="step"><span class="step-number">1</span>报告配置</li>
+          <li class="step active" aria-current="step"><span class="step-number">2</span>报告模板</li>
+          <li class="step"><span class="step-number">3</span>评语配置</li>
+          <li class="step"><span class="step-number">4</span>批量生成报告</li>
+          <li class="step"><span class="step-number">5</span>查看报告</li>
+        </ol>
+      </div>
+      <div class="step-banner">Step2：报告模板</div>
+      <div class="stage">
+        <header class="agent-heading">
+          <div class="agent-symbol" aria-hidden="true"><svg class="icon"><use href="#i-agent"/></svg></div>
+          <h2>AI评价智能体</h2>
+          <p>选择分析内容，生成学生评价报告</p>
+        </header>
+        <form id="reportForm" class="composer" novalidate>
+          <div class="request-builder" role="group" aria-label="报告生成条件">
+          <div class="subject-row">
+            <span>帮我给</span>
+            <label class="student-select">
+              <span class="sr-only">选择学生</span>
+              <select id="studentSelect" aria-label="选择学生">
+                <option value="">请选择学生</option>
+                <option value="student-1" selected>温毅宸</option>
+                <option value="student-2">示例学生A</option>
+                <option value="student-3">示例学生B</option>
+              </select>
+              <svg class="icon" aria-hidden="true"><use href="#i-down"/></svg>
+            </label>
+            <span>生成报告，包含</span>
+          </div>
+          <div class="analysis-grid" id="analysisGrid" role="group" aria-label="报告分析内容选择"></div>
+          </div>
+          <div class="summary-label">需求摘要 · 随选择自动更新</div>
+          <p class="summary" id="summary" aria-live="polite" aria-atomic="true"></p>
+          <div class="note-divider">
+            <label for="notes" class="sr-only">补充要求</label>
+            <textarea id="notes" class="notes" rows="2" placeholder="补充报告要求，例如：重点分析本学期的变化，并提供可用于课堂的教学建议。"></textarea>
+          </div>
+          <div class="composer-footer">
+            <button type="button" class="thinking-toggle" id="thinkingToggle" aria-pressed="false" title="独立控制深度思考，不影响上方深度维度选择">
+              <svg class="icon" aria-hidden="true"><use href="#i-thinking"/></svg><span>深度思考</span><span class="thinking-state" id="thinkingState">关闭</span>
+            </button>
+            <div class="send-area">
+              <span class="selection-status" id="selectionStatus" aria-live="polite"></span>
+              <button class="send-button" id="sendButton" type="submit" aria-label="发送报告需求" aria-describedby="selectionStatus"><svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
+            </div>
+          </div>
+        </form>
+        <p class="keyboard-hint">Ctrl / ⌘ + Enter 发送</p>
+        <section id="resultCard" class="result-card" hidden aria-labelledby="resultTitle">
+          <div class="result-heading">
+            <h3 id="resultTitle" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>演示提交成功</h3>
+            <div class="result-meta"><span class="demo-badge">本地演示</span><button type="button" class="close-result" id="closeResult">收起</button></div>
+          </div>
+          <p class="result-summary" id="resultSummary"></p>
+          <div class="result-details">
+            <dl><dt>补充要求</dt><dd id="resultNotes"></dd></dl>
+            <dl><dt>深度思考</dt><dd id="resultThinking"></dd></dl>
+          </div>
+        </section>
+        <section class="templates" aria-labelledby="templatesTitle">
+          <div class="templates-heading">
+            <div><h3 id="templatesTitle">报告模板</h3><p>沿用当前报告模板，按所选内容组织报告。</p></div>
+            <button type="button" class="history-button" id="historyButton"><svg class="icon" aria-hidden="true"><use href="#i-history"/></svg>历史模板</button>
+          </div>
+          <button type="button" class="template-card" id="templateButton" aria-label="选择默认报告模板">
+            <svg class="template-art" viewBox="0 0 168 188" role="img" aria-label="综合评价报告模板示意">
+              <defs><linearGradient id="paper" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#edf7ff"/></linearGradient></defs>
+              <rect width="168" height="188" fill="url(#paper)"/><text x="14" y="18" fill="#6b94d4" font-size="8" font-family="Microsoft YaHei">综合评价</text><rect x="128" y="10" width="26" height="9" rx="2" fill="#6798ee"/><path d="M12 25h144" stroke="#b8d1fa"/><circle cx="43" cy="61" r="22" fill="none" stroke="#e4eaff" stroke-width="9"/><circle cx="43" cy="61" r="22" fill="none" stroke="#8584f5" stroke-width="9" stroke-dasharray="62 138" transform="rotate(-90 43 61)"/><circle cx="43" cy="61" r="22" fill="none" stroke="#f78d97" stroke-width="9" stroke-dasharray="32 138" transform="rotate(72 43 61)"/><circle cx="43" cy="61" r="22" fill="none" stroke="#6bc7cb" stroke-width="9" stroke-dasharray="25 138" transform="rotate(158 43 61)"/><text x="43" y="63" text-anchor="middle" fill="#8c9cc0" font-size="6">五育发展</text>
+              <rect x="81" y="39" width="32" height="13" rx="2" fill="#e2ecff"/><rect x="119" y="39" width="34" height="13" rx="2" fill="#ede8ff"/><rect x="81" y="57" width="32" height="13" rx="2" fill="#fce3ed"/><rect x="119" y="57" width="34" height="13" rx="2" fill="#def4eb"/><rect x="81" y="75" width="32" height="13" rx="2" fill="#fff1da"/><rect x="119" y="75" width="34" height="13" rx="2" fill="#dff1f6"/>
+              <path d="M86 45h14m24 0h18M86 63h14m24 0h18M86 81h14m24 0h18" stroke="#99abc7" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M17 103h133M17 109h125M17 115h132M17 121h94" stroke="#c0d3e5" stroke-width="1.5" stroke-linecap="round"/>
+              <g transform="translate(84 154)"><path d="m0-22 21 15-8 25h-26l-8-25Z" fill="none" stroke="#b8d3fd"/><path d="m0-15 14 10-5 17h-18l-5-17Z" fill="none" stroke="#c7ddfd"/><path d="m0-8 7 5-3 8h-8l-3-8Z" fill="none" stroke="#d2e3fc"/><path d="M0-22v40m-21-25 34 25M21-7l-34 25" stroke="#d5e5fc"/><path d="m0-17 18 12-10 19-18-2-7-17Z" fill="#81b3fc" fill-opacity=".28" stroke="#7eaff4"/></g>
+            </svg>
+            <span class="template-caption">默认模板<svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span>
+          </button>
+        </section>
+        <p class="page-foot"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>交互演示 · 使用本地示例数据</p>
+      </div>
+    </main>
+  </div>
+  <dialog id="historyDialog" aria-labelledby="historyTitle">
+    <div class="dialog-header"><h3 id="historyTitle">历史模板</h3><button class="dialog-close" type="button" id="closeHistory" aria-label="关闭历史模板"><svg class="icon"><use href="#i-close"/></svg></button></div>
+    <div class="empty-history"><svg class="icon" aria-hidden="true"><use href="#i-doc"/></svg><p>暂无历史模板</p><small>当前演示使用默认报告模板</small></div>
+  </dialog>
+  <dialog id="prdDialog" class="prd-dialog" aria-labelledby="prdDialogTitle" aria-describedby="prdDialogDescription">
+    <header class="prd-dialog-header">
+      <div class="prd-title-block"><h2 id="prdDialogTitle"><svg class="icon" aria-hidden="true"><use href="#i-doc"/></svg>AI评价智能体 页面修改PRD</h2><p id="prdDialogDescription">当前页面改动与研发实现约定 · <span id="prdVersion">V1.1 · 研发交付版</span></p></div>
+      <div class="prd-dialog-tools"><button type="button" class="prd-tool-button" id="copyPrdButton">复制全文</button><button type="button" class="prd-tool-button" id="downloadPrdButton">下载PRD</button><button type="button" class="prd-tool-button prd-close-button" id="closePrdButton" aria-label="关闭PRD"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></div>
+    </header>
+    <div class="prd-body">
+      <aside class="prd-sidebar"><p class="prd-sidebar-title">文档目录</p><nav class="prd-navigation" id="prdNavigation" aria-label="PRD章节导航"><!-- PRD_NAV_START -->
+<a href="#prd-section-1" aria-current="location">1. 背景与目标</a>
+<a href="#prd-section-2">2. 用户与使用场景</a>
+<a href="#prd-section-3">3. 需求范围</a>
+<a href="#prd-section-4">4. 功能需求列表</a>
+<a href="#prd-section-5">5. 核心流程与交互说明</a>
+<a href="#prd-section-6">6. 异常场景与边界条件</a>
+<a href="#prd-section-7">7. 数据口径与埋点需求</a>
+<a href="#prd-section-8">8. 风险、依赖与限制</a>
+<a href="#prd-section-9">9. 验收标准</a>
+<!-- PRD_NAV_END --></nav><p class="prd-sidebar-meta" id="prdDocumentMeta">9个完整章节<br>25项分析选项 · 33条验收标准</p></aside>
+      <div class="prd-reading-pane" id="prdReadingPane"><article class="prd-document" id="prdDocument" data-source-sha256="850b3fa0c511325e63b488c78dd0325cbbee16bf9c405bff3549147cbaa1bfa8" aria-label="PRD完整正文"><!-- PRD_DOCUMENT_START -->
+<p><strong>AI评价智能体需求文档</strong></p>
+<p>版本：V1.1　日期：2026-11-14　适用端：PC管理端　交付对象：前端、后端、AI服务接入、测试人员</p>
+<p>本次改造将原“AI评价报告”入口统一更名为“AI评价智能体”，并在报告模板步骤的对话框内部顶部，增加五组共25项分析内容选择器。用户通过选择学生、组合分析内容和填写补充要求，形成结构化生成请求。研发应以本文的交互、选项字典、入参和验收条目作为实施依据。</p>
+<p>设计基线为同目录文件“AI评价智能体-交互原型.html”的最新版本。已确认规则直接作为需求；原型未定义的生产接入、持久化、校验上限和异常规则均以<span class="prd-assumption">【假设】</span>标注。原型使用本地示例数据，未接入真实生成服务。</p>
+<h2 id="prd-section-1" tabindex="-1">1. 背景与目标</h2>
+<p>现有“报告模板”步骤主要依赖用户自由输入需求，分析内容缺少明确入口。通过将常用能力转换为可组合选项，降低输入成本，并向生成服务传递可识别、可保存、可复现的内容配置。</p>
+<p>本次目标如下：</p>
+<ul><li>统一侧栏、顶部页签及中央标题的产品名称，保留原有五步报告流程。</li><li>将五组选择器放在对话框内部顶部，与“帮我给［学生］生成报告，包含……”共同组成句式布局。</li><li>支持跨组多选、自动生成需求摘要，以及独立填写补充要求。</li><li>使用稳定编码传递25项内容配置，避免依赖自然语言反向解析。</li><li><span class="prd-assumption">【假设】</span>复用既有报告生成与保存能力，使配置跟随模板或草稿进入后续批量生成。</li></ul>
+<h2 id="prd-section-2" tabindex="-1">2. 用户与使用场景</h2>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">用户</th><th scope="col">使用场景</th><th scope="col">预期操作</th></tr></thead><tbody><tr><td>班主任</td><td>了解学生综合表现及阶段变化</td><td>选择五育雷达图、进步轨迹及指定深度维度，补充关注点后生成预览。</td></tr><tr><td>任课教师</td><td>依据评价表现制定教学与辅导安排</td><td>选择学习态度、自主学习能力、分层教学建议及资源匹配方案。</td></tr><tr><td>学校管理人员</td><td>统一报告结构并复用至批量生成</td><td>配置分析内容，生成样例预览，保存模板或草稿后继续原有流程。</td></tr></tbody></table></div>
+<p><span class="prd-assumption">【假设】</span>使用权限沿用原“AI评价报告”的页面权限和数据权限。学生候选名单仅来自当前报告配置允许访问的对象；本次不新增角色、权限项或跨校数据范围。</p>
+<h2 id="prd-section-3" tabindex="-1">3. 需求范围</h2>
+<h3 tabindex="-1">In Scope</h3>
+<ul><li>侧栏、顶部页签、中央标题三处名称调整。</li><li>对话框顶部的学生选择与五组多选条件，包含完整25项内容。</li><li>下拉展开、勾选、本组全选与清空、选中数量、悬停完整文案及长列表滚动。</li><li>只读需求摘要、独立补充要求、深度思考开关、提交校验和键盘操作。</li><li><span class="prd-assumption">【假设】</span>向既有生成服务传递结构化配置，适配真实生成状态及错误反馈。</li><li><span class="prd-assumption">【假设】</span>随模板或草稿保存与回显配置，并向后续批量生成传递相同配置。</li><li>对应数据字典、数据不足反馈、行为埋点及验收用例。</li><li>原型页面右上角的PRD说明入口、完整需求弹窗及文档复制下载，供研发交接使用。</li></ul>
+<h3 tabindex="-1">Out of Scope</h3>
+<ul><li>改造原有报告配置、评语配置、批量参与名单、发布及导出流程。</li><li>新增选项维护后台、用户自定义选项或任意新增分析分组。</li><li>新建成绩、出勤、心理测评、资源库等业务数据源及独立数据采集页面。</li><li>新建持续监测任务、消息通知渠道、预警阈值配置、模型训练或独立预测算法。</li><li>心理临床诊断、自动处分、自动调整学生分组或其他依据模型结论执行的管理动作。</li><li>将原型的示例学生、示意报告图形或“演示提交成功”作为生产业务数据及结果。</li></ul>
+<p>“实时预警”在本次需求中表示生成时依据可用数据开展预警分析；持续监测与主动推送属于独立需求。25项选项用于声明输出内容，不代表本次新增25套独立分析算法。</p>
+<h2 id="prd-section-4" tabindex="-1">4. 功能需求列表</h2>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">功能模块</th><th scope="col">功能点</th><th scope="col">需求描述</th><th scope="col">优先级（P0 / P1 / P2）</th><th scope="col">备注说明</th></tr></thead><tbody><tr><td>入口名称</td><td>统一更名</td><td>侧栏与顶部页签“AI评价报告”、中央标题“AI报告助手”统一显示“AI评价智能体”。</td><td>P0</td><td>菜单编码、路由及原权限沿用。</td></tr><tr><td>页面框架</td><td>保留五步流程</td><td>依次保留报告配置、报告模板、评语配置、批量生成报告、查看报告；本次页面位于第二步。</td><td>P0</td><td>不新增步骤。</td></tr><tr><td>条件布局</td><td>对话框内句式选择</td><td>五组选择器与学生选择放在同一对话框顶部，按容器宽度自然换行，下方以分隔线连接需求摘要。</td><td>P0</td><td>禁止另建对话框外的独立选择卡片。</td></tr><tr><td>学生选择</td><td>当前预览对象</td><td>单选学生，切换后立即更新摘要，保留分析选项、补充要求及深度思考状态。</td><td>P0</td><td><span class="prd-assumption">【假设】</span>候选范围来自当前报告配置。</td></tr><tr><td>分析内容</td><td>五组25项</td><td>按第7.1节的组顺序、项顺序及文案展示，不遗漏、合并或增加选项。</td><td>P0</td><td>共6、7、5、4、3项。</td></tr><tr><td>分析内容</td><td>独立多选</td><td>每组支持多选，跨组可组合；所有选项可同时选中。取消某项仅移除该项。</td><td>P0</td><td>无组间互斥关系。</td></tr><tr><td>分析内容</td><td>全选与清空</td><td>操作仅影响当前组，操作后保持菜单展开；更新选中数量、复选状态及摘要。</td><td>P0</td><td>不提供全页面一键清空。</td></tr><tr><td>分析内容</td><td>收起态回显</td><td>未选显示“请选择”，选中1项显示名称，选中多项显示“已选N项”；悬停展示当前组完整已选名称。</td><td>P0</td><td>N仅统计当前组。</td></tr><tr><td>分析内容</td><td>菜单与键盘</td><td>同时只展开一组；支持外部点击关闭、焦点离开关闭、Esc关闭并恢复焦点、方向下键进入复选项。</td><td>P0</td><td>列表超出可用高度时内部滚动。</td></tr><tr><td>需求摘要</td><td>自动组合</td><td>按字典顺序组合学生和已选内容，只展示已选分组；摘要只读，由结构化状态派生。</td><td>P0</td><td>不按点击先后排序。</td></tr><tr><td>补充要求</td><td>自由输入</td><td>独立输入并保存，修改学生或选择项不得覆盖该字段。支持多行文本。</td><td>P0</td><td><span class="prd-assumption">【假设】</span>上限2000个Unicode码点。</td></tr><tr><td>深度思考</td><td>独立开关</td><td>默认关闭，开启后改变生成请求中的deepThinking；不影响深度维度选项。</td><td>P0</td><td>两者不得共用状态。</td></tr><tr><td>提交</td><td>条件与快捷键</td><td>已选择有效学生，且选择数大于0或补充要求去除首尾空白后非空时，允许点击发送或使用Ctrl／Command＋Enter。</td><td>P0</td><td>普通Enter在输入区换行。</td></tr><tr><td>生成反馈</td><td>状态与结果</td><td><span class="prd-assumption">【假设】</span>接入既有生成结果流，区分生成中、成功、部分成功及失败，不用演示提示冒充真实结果。</td><td>P0</td><td>第5.6节定义状态行为。</td></tr><tr><td>配置复用</td><td>保存与回显</td><td><span class="prd-assumption">【假设】</span>保存模板或草稿时一并保存analysisConfig，重新进入时优先回显已保存值。</td><td>P0</td><td>空配置与旧版本缺字段分别处理。</td></tr><tr><td>批量衔接</td><td>逐人复用</td><td><span class="prd-assumption">【假设】</span>批量生成使用已保存配置，逐人替换对象并读取各自数据。第二步学生不覆盖批量参与范围。</td><td>P0</td><td>沿用原有批量入口与名单。</td></tr><tr><td>模板区域</td><td>保留原入口</td><td>保留默认模板、历史模板及原保存入口，不因配置变化清空补充要求。</td><td>P0</td><td><span class="prd-assumption">【假设】</span>回显与覆盖规则见第5.7节。</td></tr><tr><td>数据反馈</td><td>不足与能力缺失</td><td><span class="prd-assumption">【假设】</span>对无法输出的已选项返回对应原因，页面明确列示未生成项。</td><td>P0</td><td>禁止使用示例值补齐真实结果。</td></tr><tr><td>行为分析</td><td>埋点</td><td>记录页面曝光、选项变化、提交及生成结果，不上传补充正文或生成正文。</td><td>P1</td><td>事件见第7.5节。</td></tr><tr><td>研发交接</td><td>PRD说明弹窗</td><td>原型右上角提供“PRD说明”按钮，打开包含本文九章的完整需求弹窗；支持目录定位、复制全文、下载Markdown、关闭及键盘操作。</td><td>P0</td><td>交接辅助功能；不发起报告生成请求。</td></tr></tbody></table></div>
+<h2 id="prd-section-5" tabindex="-1">5. 核心流程与交互说明</h2>
+<h3 tabindex="-1">5.1 页面结构与布局</h3>
+<p>页面自上而下为：原有导航与五步流程 → 智能体图标、标题、副标题 → 对话框 → 原有报告模板区域。</p>
+<p>对话框内部自上而下为：</p>
+<ol><li>条件句式区：“帮我给［学生下拉］生成报告，包含［可视化分析］［深度维度］［教学建议］［实时预警］［成长预测］”。各分组使用“分组标签＋多选下拉”。</li><li>分隔线及“需求摘要 · 随选择自动更新”。</li><li>只读摘要正文。</li><li>“补充要求”多行输入区。</li><li>左侧深度思考开关；右侧已选项数或校验提示、发送按钮。</li></ol>
+<p>主操作区最大宽度1000px，居中展示。学生句式和每个“分组标签＋下拉”作为布局单元参与换行，组内标签不得与所属下拉分离。采用白底、浅色边框、圆角与绿色选中状态。桌面宽度1920、1440、1280px均不得产生页面横向溢出；换行不得改变分组顺序。</p>
+<p>布局及长菜单示例参见配套原型；Word版附有最新页面局部示意。</p>
+<h3 tabindex="-1">5.2 初始化</h3>
+<p>新配置默认仅选中“可视化分析／五育雷达图”，其余24项未选；补充要求为空，深度思考关闭。</p>
+<p><span class="prd-assumption">【假设】</span>生产端优先沿用当前报告中已选择且仍有效的预览学生；没有有效选择时显示“请选择学生”。不得将原型中的“温毅宸”硬编码为生产默认学生。</p>
+<p><span class="prd-assumption">【假设】</span>存在已保存analysisConfig时，完整回显其五组数组、补充要求和深度思考值，不追加默认值。旧草稿完全不存在analysisConfig字段时，按新配置默认值初始化，不自动写入数据库；经用户执行保存后持久化。</p>
+<h3 tabindex="-1">5.3 下拉操作</h3>
+<ul><li>打开一组时关闭上一组；点击已展开组的触发器则关闭当前组。</li><li>点击选项文字或复选框均切换该项，菜单保持展开，无额外“确定”按钮。</li><li>本组“全选”选中该组全部字典项；本组“清空”移除该组全部已选项；重复操作保持相同结果。</li><li>单项回显文案过长时省略，悬停显示完整已选名称，菜单内文案完整显示。</li><li>菜单锚定所属下拉，优先向下展开；下方不足且上方空间更大时向上展开。左右边界距离视口至少16px。</li><li>菜单最大高度340px，同时受当前视口可用空间约束；内容超出时在菜单内部滚动。“全选／清空”工具栏在内部滚动时保持可操作。</li><li>点击外部、焦点移出本组或调整窗口尺寸时关闭菜单。Esc关闭后焦点回到所属触发器；触发器按方向下键时打开菜单并聚焦首个复选项。</li><li>下拉触发器、全选、清空均使用非提交按钮；只有发送按钮提交生成请求。</li></ul>
+<h3 tabindex="-1">5.4 摘要与补充要求</h3>
+<p>摘要模板为：“帮我为{学生姓名}生成评价报告，包含：{分组摘要}。”分组使用固定顺序：可视化分析、深度维度分析、教学建议、实时预警、成长预测；组间用“；”分隔，组内已选名称用“、”分隔。</p>
+<p>示例：“帮我为温毅宸生成评价报告，包含：可视化分析（五育雷达图、进步轨迹）；深度维度分析（问题解决能力、自我管理能力）；教学建议（家校协同建议）。”</p>
+<p>各组中的项目始终按第7.1节字典顺序排列。切换学生、勾选、取消、全选、清空后，同一交互周期内更新摘要与数量，不调用生成服务。</p>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">状态</th><th scope="col">摘要正文</th><th scope="col">发送按钮旁提示</th></tr></thead><tbody><tr><td>未选学生</td><td>请选择学生，报告需求将自动更新。</td><td>请先选择学生</td></tr><tr><td>有学生、有选择项</td><td>按上述摘要模板展示。</td><td>已选 N 项分析内容</td></tr><tr><td>有学生、无选择项、有有效补充</td><td>帮我为{学生姓名}生成评价报告，具体要求见下方补充内容。</td><td>按补充要求生成报告</td></tr><tr><td>有学生、无选择项、补充为空白</td><td>请选择分析内容，或在下方补充您的报告需求。</td><td>请选择分析内容或填写补充要求</td></tr></tbody></table></div>
+<p>“补充要求”与摘要使用独立字段。占位提示为“补充报告要求，例如：重点分析本学期的变化，并提供可用于课堂的教学建议。”切换学生、分析内容及深度思考状态均不得重写补充正文。</p>
+<p><span class="prd-assumption">【假设】</span>补充要求最多2000个Unicode码点，前端显示字数并校验，服务端执行同一上限校验；首尾空白在提交时去除，内部换行及空白保留。超限时显示“补充要求最多2000字”，禁用发送并保留原文。补充要求用于补充内容、侧重点和表达方式，不自动勾选或取消结构化选项。</p>
+<h3 tabindex="-1">5.5 深度思考与发送</h3>
+<p>深度思考初始为关闭，点击切换开启／关闭并即时回显。深度思考控制生成模式，深度维度控制分析内容，两者分别存储。</p>
+<p>发送条件为：studentId有效，并且“全局已选项数＞0”或“trim后的补充要求非空”。<span class="prd-assumption">【假设】</span>生产端还应满足补充未超限、当前未处于生成中及原有生成权限校验。</p>
+<p>无效状态下按钮禁用，鼠标提示及按钮旁文案解释原因。输入区支持Ctrl＋Enter与Command＋Enter，执行同一校验；中文输入法组字期间不得触发快捷提交。</p>
+<h3 tabindex="-1">5.6 生成与结果承接<span class="prd-assumption">【假设】</span></h3>
+<p>点击发送时固定本次学生、analysisConfig及报告上下文快照，提交给既有生成服务。摘要属于展示字段，服务端不得从摘要恢复选择状态。生成内容由既有能力承接；没有真实可用的生成服务时，开发联调界面必须明确标识演示环境。</p>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">状态</th><th scope="col">页面行为</th><th scope="col">后续操作</th></tr></thead><tbody><tr><td>生成中</td><td>发送按钮展示“生成中”并禁用；学生、五组选择、补充要求及深度思考暂时禁用。</td><td>使用既有流式或任务状态机制获取结果。</td></tr><tr><td>成功</td><td>真实内容进入既有报告或草稿预览，提示“生成成功”；配置完整保留。</td><td>用户继续调整、保存或进入原有后续步骤。</td></tr><tr><td>部分成功</td><td>展示已生成内容，并列出“以下内容未生成”及对应原因。</td><td>支持调整选择后重新生成，不补造缺失部分。</td></tr><tr><td>失败</td><td>显示失败原因及重试入口，不以旧内容或本地回显冒充本次结果。</td><td>恢复编辑，保留本次所有输入。</td></tr></tbody></table></div>
+<p>接口仅受理请求或返回任务ID时仍属于生成中，不得提前显示生成成功。生成完成后恢复编辑。已有结果对应上一次成功快照；修改学生、选项、补充要求或深度思考后，标记“配置已修改，请重新生成”，不得将旧结果标为当前配置生成。</p>
+<p>连续点击及快捷键不得并发创建相同请求。同一次网络重试沿用requestId，并重放原请求快照；用户已修改学生或配置时，操作改为“重新生成”并使用新的requestId，不得以旧标识提交新参数。服务端对同一requestId收到不同参数时返回请求标识冲突。已收到明确失败结果后，用户点击重新生成时创建新的requestId。页面关闭后返回的响应不得重新打开页面或覆盖其他报告。</p>
+<p>原型的“演示提交成功”卡片仅用于核对本地参数。生产端复用原有报告预览和结果展示，不新增重复的报告结果区域。</p>
+<h3 tabindex="-1">5.7 模板草稿保存与批量衔接<span class="prd-assumption">【假设】</span></h3>
+<ul><li>沿用原有“保存模板／保存草稿”操作，将analysisConfig与对应模板或草稿版本一并保存；保存失败保留编辑状态并提示重试，不显示保存成功。</li><li>保存编辑草稿时，允许保存尚未生成的新配置，但必须至少选择一项或填写有效补充，且补充未超限；仅保存通用配置时不要求已选择预览学生。全部未选且补充为空白时禁止保存，提示“请选择分析内容或填写补充要求”。</li><li>保存为可复用模板或进入第三步前，当前学生及analysisConfig须与最近一次成功或部分成功的生成快照一致。未生成、生成失败或配置已修改时，提示“请先按当前配置生成预览”，不允许将旧预览绑定新配置；部分成功时保留未生成项说明后继续原流程。</li><li>保存尚未生成的新配置为编辑草稿时，保留历史预览用于查看，但标记其不属于当前配置；不得将该历史预览记为新草稿版本的有效生成结果。</li><li>仅执行生成不等于已保存。进入下一步时沿用平台现有保存机制；存在未保存配置时阻止静默丢失，提供保存后继续或取消。</li><li>从历史模板切换到另一模板前，若当前存在未保存修改，先提示“切换模板将替换当前分析配置，是否继续”；取消则保持原值，确认后载入目标模板配置。</li><li>历史模板有analysisConfig时完整覆盖当前配置，包括补充要求；历史模板缺少该字段时按第5.2节旧版本规则初始化。普通学生或选项切换不触发此覆盖行为。</li><li>Step2选中的学生是当前预览对象。Step4仍使用原报告配置的完整参与范围；批量生成逐人读取其数据并应用同一已保存analysisConfig，不复用预览学生的姓名、数值或结论。</li><li>已保存“五组空数组＋非空补充要求”是有效配置。回显及批量生成不得将其当作旧版本缺字段，也不得补选五育雷达图。</li></ul>
+<h3 tabindex="-1">5.8 原型页面PRD说明</h3>
+<p>右上角顶部操作区提供“PRD说明”按钮。按钮用于查阅当前页面版本的完整研发需求，打开后不改变学生、已选项、补充要求、深度思考或已展示的演示结果。</p>
+<ul><li>使用模态弹窗展示“AI评价智能体 页面修改PRD”，显示文档版本V1.1。弹窗包含本文全部九个一级章节、25项选项字典、请求示例及33条验收用例；不只展示摘要或截取部分正文。</li><li>提供九章目录和独立正文滚动区；点击目录定位到对应章节。长表格在正文区域内横向滚动，页面本身不产生横向溢出。1920、1440、1280px宽度及720px高窗口均能操作关闭入口和目录。</li><li>弹窗打开时关闭原型内的选择菜单，并锁定背景页面滚动；焦点进入弹窗，Tab及Shift＋Tab在弹窗内循环。支持关闭按钮、Esc及点击遮罩关闭，关闭后恢复原滚动状态并将焦点交还“PRD说明”按钮。弹窗内Esc不再触发选择菜单的关闭逻辑。</li><li>“复制全文”复制完整Markdown内容；成功后提示“PRD全文已复制”。浏览器剪贴板权限受限或调用失败时，提示“复制失败，请使用下载PRD”，保留弹窗正文和其他操作能力。</li><li>“下载PRD”通过浏览器下载当前版本的Markdown文件，文件内容须与弹窗正文的来源一致，不使用历史版本或空文件。</li><li>PRD正文和原始Markdown随原型文件内嵌，外部访问及直接打开本地HTML均可阅读，无需额外请求文档接口或加载第三方脚本。发布前核对内嵌文本与配套PRD文件完全一致。</li></ul>
+<p>本节属于原型研发交接功能；正式业务端的页面改造和接口接入按其余章节实施。原型仅使用本地演示数据，PRD中标注<span class="prd-assumption">【假设】</span>的生产接入要求不得被理解为原型已实现或现网接口已核验。</p>
+<h2 id="prd-section-6" tabindex="-1">6. 异常场景与边界条件</h2>
+<p>除原型已实现的空值、单弹层和菜单操作外，下表中的生产校验与生成异常处置均为<span class="prd-assumption">【假设】</span>实现规则。</p>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">场景</th><th scope="col">处理规则</th></tr></thead><tbody><tr><td>学生名单加载中或为空</td><td>加载中禁用学生选择与发送；空名单显示“当前报告范围内暂无可用学生”，保留其他编辑配置。</td></tr><tr><td>学生已移出报告范围或权限失效</td><td>服务端拒绝生成，前端清除失效学生并重新加载候选范围；不自动改成另一学生提交。</td></tr><tr><td>某组全部清空</td><td>仅移除该组摘要；其他组选项及补充要求保持不变。</td></tr><tr><td>全部清空且仅有空格、换行</td><td>视为无有效补充，禁用发送；不得请求生成服务。</td></tr><tr><td>全部清空但有有效补充</td><td>允许提交，五组均传空数组；由既有自由输入生成能力承接。</td></tr><tr><td>选项重复或组别不匹配</td><td>前端集合去重；服务端校验编码归属，存在未知编码或错误归属时拒绝，不静默丢弃。</td></tr><tr><td>旧模板缺少配置字段</td><td>按新配置默认值初始化；已存在配置中的显式空数组完整保留。</td></tr><tr><td>保存配置含未知版本或失效编码</td><td>保留原存储，不覆盖保存；提示“配置版本不兼容，请更新配置后重试”。未知编码不得显示为已成功选中。</td></tr><tr><td>数据不足</td><td>对所选项返回数据不足状态与具体缺项；不得将未知分数记为0、补齐不存在的曲线或据此输出风险结论。</td></tr><tr><td>多阶段、多主体数据不完整</td><td>明确说明缺少阶段或评价主体；不把单阶段、单主体内容标为对比分析。</td></tr><tr><td>心理相关数据不可用或无访问权限</td><td>对心理风险项返回原因；不得用积分高低直接推断心理状态。相关结论作为需人工核实的关注提示。</td></tr><tr><td>预测或资源服务未接入</td><td>对对应选项返回能力不支持说明；资源仅引用已接入且有有效标识的记录。</td></tr><tr><td>网络失败或服务超时</td><td>保留输入，结束本次加载态，展示“生成失败，请重试”；未改输入时按原快照和同一requestId查询或重试，修改输入后改为新requestId重新生成，避免重复创建或错用快照。</td></tr><tr><td>服务端仅返回受理成功</td><td>持续使用生成中状态，直到收到最终结果；服务错误不得转换成成功。</td></tr><tr><td>全部所选内容均无法生成</td><td>无有效生成正文时展示失败及逐项原因；存在可独立生成的补充要求正文时按部分成功承接。</td></tr><tr><td>用户输入包含HTML或脚本</td><td>摘要、补充回显及错误信息按纯文本渲染；生成正文沿用平台安全渲染机制。</td></tr><tr><td>多次生成或页面切换</td><td>结果绑定对应requestId、报告、预览学生及配置快照；过期响应不覆盖其他页面或请求结果。</td></tr><tr><td>PRD复制权限受限</td><td>显示复制失败提示并引导下载；不关闭弹窗，不改变报告配置。</td></tr><tr><td>PRD内容版本更新</td><td>发布时同步替换内嵌原始Markdown与渲染正文；二者及配套PRD文件不一致时不得发布。</td></tr></tbody></table></div>
+<h2 id="prd-section-7" tabindex="-1">7. 数据口径与埋点需求</h2>
+<h3 tabindex="-1">7.1 分组选项字典</h3>
+<p>以下分组、显示文案及排列顺序与最新原型一致。<span class="prd-assumption">【假设】</span>稳定编码用于生产请求、保存、回显及埋点；编码不得随文案调整改变。组内使用数组并按字典顺序序列化。</p>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">分组及键</th><th scope="col">选项编码</th><th scope="col">显示文案</th><th scope="col">输出内容边界</th></tr></thead><tbody><tr><td>可视化分析 visual</td><td>VIS_01</td><td>五育雷达图</td><td>基于已有德智体美劳指标映射及统一量纲展示五育分布。</td></tr><tr><td>可视化分析 visual</td><td>VIS_02</td><td>优势短板可视化</td><td>按已有评价口径呈现优势及待提升项，说明比较依据。</td></tr><tr><td>可视化分析 visual</td><td>VIS_03</td><td>进步轨迹</td><td>展示统计范围内已发生的历史变化，不包含未来预测。</td></tr><tr><td>可视化分析 visual</td><td>VIS_04</td><td>评价指标分布图</td><td>按已有指标层级展示有效评价的分布。</td></tr><tr><td>可视化分析 visual</td><td>VIS_05</td><td>阶段表现对比图</td><td>比较两个及以上已发生阶段的表现，使用可比口径。</td></tr><tr><td>可视化分析 visual</td><td>VIS_06</td><td>多主体评价对比图</td><td>按数据中实际存在的评价主体比较表现，不虚设主体。</td></tr><tr><td>深度维度 dimension</td><td>DIM_01</td><td>学习态度</td><td>分析已有学习投入、任务完成等观察记录。</td></tr><tr><td>深度维度 dimension</td><td>DIM_02</td><td>创新能力</td><td>分析已有创意表达、探索与创新实践证据。</td></tr><tr><td>深度维度 dimension</td><td>DIM_03</td><td>协作能力</td><td>分析团队参与、合作分工及共同完成任务的表现。</td></tr><tr><td>深度维度 dimension</td><td>DIM_04</td><td>自主学习能力</td><td>分析自主规划、独立学习及自我反思的表现。</td></tr><tr><td>深度维度 dimension</td><td>DIM_05</td><td>问题解决能力</td><td>分析问题识别、方案形成、执行与改进的表现。</td></tr><tr><td>深度维度 dimension</td><td>DIM_06</td><td>沟通表达能力</td><td>分析表达、倾听、交流及反馈的表现。</td></tr><tr><td>深度维度 dimension</td><td>DIM_07</td><td>自我管理能力</td><td>分析时间安排、自律及任务管理的表现。</td></tr><tr><td>教学建议 advice</td><td>ADV_01</td><td>学习状态诊断</td><td>依据学习证据描述当前学习状态及需要关注的问题。</td></tr><tr><td>教学建议 advice</td><td>ADV_02</td><td>资源匹配方案</td><td>输出匹配理由及有效资源标识，不虚构资源链接。</td></tr><tr><td>教学建议 advice</td><td>ADV_03</td><td>分层教学建议</td><td>输出适合当前学生的教学目标、任务层次和支持方式。</td></tr><tr><td>教学建议 advice</td><td>ADV_04</td><td>个性化辅导方案</td><td>输出辅导目标、行动安排及跟进建议。</td></tr><tr><td>教学建议 advice</td><td>ADV_05</td><td>家校协同建议</td><td>输出家庭与学校可分别落实的协同建议。</td></tr><tr><td>实时预警 warning</td><td>ALT_01</td><td>偏科预警</td><td>基于可比学科表现识别不均衡，说明数据依据。</td></tr><tr><td>实时预警 warning</td><td>ALT_02</td><td>心理风险预警</td><td>基于获授权的适用证据输出关注提示，需人工核实。</td></tr><tr><td>实时预警 warning</td><td>ALT_03</td><td>学习投入下降预警</td><td>根据连续历史证据识别投入下降，说明比较范围。</td></tr><tr><td>实时预警 warning</td><td>ALT_04</td><td>出勤异常预警</td><td>基于可用考勤记录提示出勤异常，不以评价次数替代考勤。</td></tr><tr><td>成长预测 forecast</td><td>FOR_01</td><td>潜力领域发展曲线</td><td>基于已有预测能力呈现潜力领域的发展推演及依据。</td></tr><tr><td>成长预测 forecast</td><td>FOR_02</td><td>五育发展趋势预测</td><td>基于已有预测能力推演五育发展方向，区分历史与预测区间。</td></tr><tr><td>成长预测 forecast</td><td>FOR_03</td><td>成长目标达成预测</td><td>对已配置且可度量的成长目标输出达成推演及前提。</td></tr></tbody></table></div>
+<p><span class="prd-assumption">【假设】</span>本次使用字典版本1。前后端共享同一份字典及编码白名单；不通过中文文案识别选项，不依赖前端DOM顺序作为存储标识。各项内容定义约束生成请求与输出，不新增统计权重、预警阈值或预测公式。</p>
+<h3 tabindex="-1">7.2 统计与内容口径</h3>
+<p>全局已选项数N＝五组去重后选项数之和，范围0至25；本组“已选N项”只统计当前组。深度思考及补充要求不计入项数。</p>
+<p><span class="prd-assumption">【假设】</span>真实数据使用当前报告第一步所关联活动、统计范围及平台既有有效记录口径。缺少量纲、指标映射或可比时间段时返回对应原因；不将积分总计、积分余额或发卡次数直接替代五育能力值。</p>
+<p>历史“进步轨迹／阶段表现对比”与未来“成长预测”分别处理。预测展示需标识预测区间和依据；本需求不建立新的预测模型。多主体对比仅使用真实可区分的主体数据。</p>
+<h3 tabindex="-1">7.3 生成请求逻辑契约<span class="prd-assumption">【假设】</span></h3>
+<p>复用现有Step2生成接口并扩展参数；本节定义前后端必须映射的业务字段，不指定未经核验的URL。已有报告、学生、模板ID字段可由适配层映射，但analysisConfig的结构和选项编码保持一致。</p>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">字段</th><th scope="col">类型</th><th scope="col">必填</th><th scope="col">规则</th></tr></thead><tbody><tr><td>requestId</td><td>string</td><td>是</td><td>本次生成的请求标识，网络重试保持不变；明确重新生成时更新。</td></tr><tr><td>reportId</td><td>string</td><td>是</td><td>当前报告配置ID；关联活动、统计范围和参与范围由服务端据此读取。</td></tr><tr><td>studentId</td><td>string</td><td>是</td><td>当前预览学生ID；服务端校验其属于报告范围且调用者有权限。</td></tr><tr><td>templateId</td><td>string或null</td><td>是</td><td>使用既有模板ID；新建且尚未保存时允许null，由现有生成流程处理。</td></tr><tr><td>analysisConfig.version</td><td>integer</td><td>是</td><td>本版固定1。</td></tr><tr><td>analysisConfig.options</td><td>object</td><td>是</td><td>固定包含visual、dimension、advice、warning、forecast五个数组。</td></tr><tr><td>analysisConfig.options各组</td><td>string[]</td><td>是</td><td>0至该组项数个稳定编码；空组传[]，不得省略或传中文名称。</td></tr><tr><td>analysisConfig.notes</td><td>string</td><td>是</td><td>去除首尾空白后的补充要求，允许空字符串，上限2000个Unicode码点。</td></tr><tr><td>analysisConfig.deepThinking</td><td>boolean</td><td>是</td><td>true为开启，false为关闭；不由dimension数组推导。</td></tr></tbody></table></div>
+<p>请求示例中的ID均为占位值：</p>
+<pre><code class="language-json">{
+  &quot;requestId&quot;: &quot;request_example_001&quot;,
+  &quot;reportId&quot;: &quot;report_example_001&quot;,
+  &quot;studentId&quot;: &quot;student_example_001&quot;,
+  &quot;templateId&quot;: null,
+  &quot;analysisConfig&quot;: {
+    &quot;version&quot;: 1,
+    &quot;options&quot;: {
+      &quot;visual&quot;: [&quot;VIS_01&quot;, &quot;VIS_03&quot;],
+      &quot;dimension&quot;: [&quot;DIM_05&quot;, &quot;DIM_07&quot;],
+      &quot;advice&quot;: [&quot;ADV_05&quot;],
+      &quot;warning&quot;: [],
+      &quot;forecast&quot;: []
+    },
+    &quot;notes&quot;: &quot;重点关注课堂协作表现。&quot;,
+    &quot;deepThinking&quot;: false
+  }
+}</code></pre>
+<p>服务端执行登录及数据权限、对象有效性、版本、组别归属、编码白名单、长度及至少一项有效需求校验。学校及用户身份来自可信登录态，不能接受客户端自行声明的数据权限范围。</p>
+<p>服务端将稳定编码映射为内容指令，与可信报告数据、模板和独立补充要求组合后调用既有生成能力。补充文本作为用户需求处理，不作为服务端工具调用、权限变更或数据范围修改指令。前端摘要不作为选择状态或权限的可信来源。</p>
+<h3 tabindex="-1">7.4 返回结果与持久化逻辑契约<span class="prd-assumption">【假设】</span></h3>
+<p>适配层需将既有返回结果映射为以下含义，沿用平台原有响应包结构：</p>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">字段或状态</th><th scope="col">定义</th></tr></thead><tbody><tr><td>generationId</td><td>真实生成任务或调用标识。</td></tr><tr><td>draftId／内容引用</td><td>生成成功后的既有草稿ID或可预览内容引用；不得用请求ID冒充生成内容。</td></tr><tr><td>generationState</td><td>PROCESSING、SUCCEEDED、PARTIAL、FAILED，分别对应生成中、成功、部分成功、失败。</td></tr><tr><td>analysisResults</td><td>最终状态时按每个已选编码返回结果；仅补充要求场景允许为空数组。</td></tr><tr><td>analysisResults.optionCode</td><td>对应第7.1节稳定编码。</td></tr><tr><td>analysisResults.state</td><td>GENERATED、DATA_INSUFFICIENT、UNSUPPORTED，分别表示已生成、数据不足、能力未接入。</td></tr><tr><td>analysisResults.message</td><td>未生成项的可展示原因；不包含内部堆栈、凭据或其他学生信息。</td></tr><tr><td>errorCode／message</td><td>整体失败时的业务错误码及可展示说明，映射平台既有错误规范。</td></tr></tbody></table></div>
+<p>整体成功表示真实正文已生成且所选项均有有效输出；部分成功表示已有正文但存在未生成项；全部无法输出且没有有效正文时为失败。对数据不足、能力缺失的项目不得仅返回空白正文并标为成功。</p>
+<p>analysisConfig作为一个完整对象绑定模板或草稿版本保存。版本、五组数组、notes及deepThinking必须同次保存、同次读取；显式空数组具有业务意义。生成请求快照用于结果归属校验，保存接口失败不得清除当前编辑值。既有历史报告正文不回填、不重算。</p>
+<h3 tabindex="-1">7.5 埋点需求<span class="prd-assumption">【假设】</span></h3>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">事件</th><th scope="col">触发时机</th><th scope="col">事件属性</th></tr></thead><tbody><tr><td>ai_agent_view</td><td>页面初始化完成</td><td>入口来源、配置版本、是否有历史配置。</td></tr><tr><td>ai_agent_options_change</td><td>勾选、取消、全选或清空完成</td><td>分组键、动作、变更编码、本组项数、全局项数；一次全选或清空计一次事件。</td></tr><tr><td>ai_agent_submit</td><td>校验通过并发出真实请求</td><td>requestId、五组编码、全局项数、是否有补充、补充长度、深度思考状态。</td></tr><tr><td>ai_agent_generate_result</td><td>本次生成进入最终状态</td><td>requestId、生成状态、耗时、未生成编码及原因分类。</td></tr><tr><td>ai_agent_config_save</td><td>保存操作返回结果</td><td>配置版本、保存成功或失败、错误分类。</td></tr></tbody></table></div>
+<p>统计生成成功率＝SUCCEEDED次数／进入最终状态的生成次数；部分成功率单列PARTIAL次数／同一分母。PROCESSING不计入最终状态分母；同一requestId的网络重试不重复计为新增生成。</p>
+<p>埋点不记录学生姓名、补充要求正文、心理相关原始记录或生成正文。requestId用于关联事件；身份信息复用平台合规的公共埋点字段。</p>
+<h2 id="prd-section-8" tabindex="-1">8. 风险、依赖与限制</h2>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">依赖或风险</th><th scope="col">实施约束</th></tr></thead><tbody><tr><td>既有接口与存储未在原型中核验</td><td><span class="prd-assumption">【假设】</span>按第7.3和7.4节逻辑契约扩展现有接口及模板／草稿存储，不将示例URL、ID或返回结构声明为现网事实。</td></tr><tr><td>基础数据与高级能力不齐全</td><td>五育映射、可比成绩、连续评价、主体标识、考勤、获授权的心理相关数据、资源库及预测服务分别按选项校验，不要求为本次页面改造新建数据系统。</td></tr><tr><td>评价口径与生成内容不一致</td><td>复用既有统计、指标和模板口径；前端不自行计算能力分、预警等级或预测结果。</td></tr><tr><td>原型与生产行为不同</td><td>演示学生和本地提交回显仅用于交互核验；生产须使用真实对象权限、真实请求和真实生成状态。</td></tr><tr><td>批量配置误用单人信息</td><td>保存通用配置而非预览学生结论；后续每位学生使用各自数据重新生成。</td></tr><tr><td>命名兼容</td><td>只调整三处展示名称，不因更名改变菜单权限编码、历史记录标识或路由兼容性。</td></tr><tr><td>历史草稿兼容</td><td>区分缺字段与显式空配置；未知配置版本保留原值并提示处理，不静默覆盖。</td></tr></tbody></table></div>
+<p><span class="prd-assumption">【假设】</span>发布顺序为共享字典与后端兼容字段 → 生成及保存接口适配 → 前端页面 → 联调验收。旧客户端未传analysisConfig时沿用原有生成流程；新增配置作为可选扩展存储，不破坏旧草稿读取。请求使用目标环境实际配置的HTTP或HTTPS协议，不在前端擅自改写协议。</p>
+<p>上线验收重点为配置一致性、结果状态真实性及批量复用正确性；业务分析算法的新增与调优另立需求。</p>
+<p><span class="prd-assumption">【假设】</span>出现新增配置功能异常时，复用平台已有发布或功能开关机制回退至原自由输入流程，已保存扩展配置保留；本次不新增运行期开关管理后台。</p>
+<h2 id="prd-section-9" tabindex="-1">9. 验收标准</h2>
+<p>所有P0条目通过后交付；P1埋点在启用对应统计前完成。下表中的生产接入场景按本文<span class="prd-assumption">【假设】</span>约定执行，测试不以原型本地回显代替服务联调。</p>
+<div class="prd-table-wrap" tabindex="0" role="region" aria-label="需求表格，支持横向滚动"><table class="prd-table"><thead><tr><th scope="col">编号</th><th scope="col">场景与操作</th><th scope="col">通过标准</th></tr></thead><tbody><tr><td>AC01</td><td>打开原报告模板步骤</td><td>侧栏、顶部页签、中央标题均为“AI评价智能体”；原五步顺序及当前步骤正确。</td></tr><tr><td>AC02</td><td>检查条件区位置</td><td>五组与学生句式均在同一对话框内部顶部；对话框上方没有独立选择卡片。</td></tr><tr><td>AC03</td><td>核对字典</td><td>依次为6、7、5、4、3项，共25项；文案、编码、顺序与第7.1节一致且无重复。</td></tr><tr><td>AC04</td><td>初始化新配置</td><td>仅选五育雷达图，深度思考关闭、补充为空；生产学生按第5.2节初始化。</td></tr><tr><td>AC05</td><td>同组及跨组多选</td><td>可同时选中25项，无互斥；单项回显名称、多项显示本组数量，悬停名称完整。</td></tr><tr><td>AC06</td><td>执行本组全选、清空</td><td>仅影响当前组，菜单保持展开；其他组、补充文字、学生及深度思考不变。</td></tr><tr><td>AC07</td><td>乱序勾选后检查摘要</td><td>摘要按固定字典顺序展示，仅包含已选组；与点击顺序无关。</td></tr><tr><td>AC08</td><td>输入补充后切换学生及选项</td><td>摘要和数量及时更新，补充正文逐字保留，深度思考状态不变。</td></tr><tr><td>AC09</td><td>切换深度思考</td><td>仅deepThinking变化，dimension数组及其选中数量不变。</td></tr><tr><td>AC10</td><td>清空全部并输入空格换行</td><td>发送禁用并显示正确引导；前后端均不接受无有效需求的生成。</td></tr><tr><td>AC11</td><td>清空全部，仅填写有效补充</td><td>允许发送；五组传[]，补充正文经首尾去空白后传递。</td></tr><tr><td>AC12</td><td>无学生或学生失效</td><td>无学生时禁用；服务端拒绝无权限或失效对象，不自动替换学生生成。</td></tr><tr><td>AC13</td><td>检查长度与文本回显</td><td>2000码点允许提交、2001码点拦截；内部换行保留，HTML按纯文本回显。</td></tr><tr><td>AC14</td><td>检查鼠标与键盘</td><td>外部关闭、单弹层、Esc恢复焦点、方向下键进入、普通Enter换行与快捷发送均符合第5节。</td></tr><tr><td>AC15</td><td>打开7项长菜单并滚动</td><td>末项可见可选，全选／清空可操作；1920、1440、1280宽度及720高窗口均无菜单裁切或横向溢出。</td></tr><tr><td>AC16</td><td>检查真实请求</td><td>含当前报告、预览学生和完整analysisConfig；全部编码归属正确，不依赖摘要反向解析。</td></tr><tr><td>AC17</td><td>点击选项、全选或清空</td><td>不触发表单提交或生成接口；仅发送和有效快捷键发起请求。</td></tr><tr><td>AC18</td><td>模拟生成中及连续点击</td><td>编辑区按规则禁用，同一请求不并发创建；返回任务ID仍显示生成中。</td></tr><tr><td>AC19</td><td>模拟成功、部分成功、失败</td><td>真实结果由原预览承接；未生成项及原因明确；失败不清空输入，不提示演示或虚假成功。</td></tr><tr><td>AC20</td><td>模拟数据不足及全部不可用</td><td>不生成虚构分数、曲线或心理结论；全部无正文时显示失败，部分输出时显示部分成功。</td></tr><tr><td>AC21</td><td>保存并重新打开</td><td>version、五组数组、补充及开关完全回显；保存失败保留当前编辑值。</td></tr><tr><td>AC22</td><td>对比旧草稿和有效空配置</td><td>旧草稿缺字段时默认选五育；保存的空数组＋补充要求回显时仍为空数组。</td></tr><tr><td>AC23</td><td>切换历史模板或离开步骤</td><td>未保存内容经确认后才替换或离开；取消操作不丢失输入。</td></tr><tr><td>AC24</td><td>保存后执行批量生成</td><td>参与范围沿用报告配置，每人使用相同内容配置和各自数据，不复用预览学生结果。</td></tr><tr><td>AC25</td><td>结果返回前后修改或切页</td><td>生成中禁止修改；完成后修改标记需重新生成；过期结果不覆盖其他请求或页面。</td></tr><tr><td>AC26</td><td>校验未知编码、版本及网络重试</td><td>服务端明确拒绝无效配置；网络重试沿用requestId，明确重新生成使用新requestId。</td></tr><tr><td>AC27</td><td>检查埋点</td><td>选项、提交及结果事件可关联，同一请求重试不重复计数；无学生姓名、补充正文及生成正文。</td></tr><tr><td>AC28</td><td>网络超时后重试或修改输入</td><td>不修改时重放原快照并沿用requestId；修改时新建requestId；同标识不同参数被服务端拒绝。</td></tr><tr><td>AC29</td><td>修改配置后保存或进入下一步</td><td>可保存有效配置为编辑草稿，旧预览标记为不匹配；保存可复用模板或进入下一步前须重新生成对应预览。</td></tr><tr><td>AC30</td><td>无预览学生或全部空需求时保存</td><td>有有效需求且未选预览学生时可存编辑草稿；全部未选且补充为空白时禁止保存，不产生可复用模板。</td></tr><tr><td>AC31</td><td>点击右上角PRD说明及目录</td><td>打开模态弹窗，显示V1.1全文及九章目录；章节定位正确，25项字典、请求示例及33条验收条目完整可读。</td></tr><tr><td>AC32</td><td>关闭PRD及检查配置</td><td>关闭按钮、Esc、遮罩均可关闭；焦点归还入口，背景滚动恢复；Tab不逃出弹窗，报告配置及补充文字不变。</td></tr><tr><td>AC33</td><td>复制下载及外部访问</td><td>复制与下载内容与当前PRD源文件一致；复制受限时给出明确提示；公开链接可直接访问，刷新后页面及PRD正常，无需登录或本机服务。</td></tr></tbody></table></div>
+<p>研发自检顺序为：字典与页面结构核对 → 组件交互及校验 → 生成和保存接口联调 → 旧草稿兼容与批量回归 → 三种桌面宽度及长菜单检查。原型已完成本地交互核验，生产接口、数据权限、保存及批量场景须按上述条目重新验收。</p>
+<!-- PRD_DOCUMENT_END --></article></div>
+    </div>
+    <footer class="prd-dialog-footer"><span class="prd-action-status" id="prdActionStatus" role="status" aria-live="polite"></span><span>Esc 关闭 · 支持离线阅读与下载</span></footer>
+  </dialog>
+  <script type="application/json" id="prdSource">"**AI评价智能体需求文档**\n\n版本：V1.1　日期：2026-11-14　适用端：PC管理端　交付对象：前端、后端、AI服务接入、测试人员\n\n本次改造将原“AI评价报告”入口统一更名为“AI评价智能体”，并在报告模板步骤的对话框内部顶部，增加五组共25项分析内容选择器。用户通过选择学生、组合分析内容和填写补充要求，形成结构化生成请求。研发应以本文的交互、选项字典、入参和验收条目作为实施依据。\n\n设计基线为同目录文件“AI评价智能体-交互原型.html”的最新版本。已确认规则直接作为需求；原型未定义的生产接入、持久化、校验上限和异常规则均以【假设】标注。原型使用本地示例数据，未接入真实生成服务。\n\n# 1. 背景与目标\n\n现有“报告模板”步骤主要依赖用户自由输入需求，分析内容缺少明确入口。通过将常用能力转换为可组合选项，降低输入成本，并向生成服务传递可识别、可保存、可复现的内容配置。\n\n本次目标如下：\n\n- 统一侧栏、顶部页签及中央标题的产品名称，保留原有五步报告流程。\n- 将五组选择器放在对话框内部顶部，与“帮我给［学生］生成报告，包含……”共同组成句式布局。\n- 支持跨组多选、自动生成需求摘要，以及独立填写补充要求。\n- 使用稳定编码传递25项内容配置，避免依赖自然语言反向解析。\n- 【假设】复用既有报告生成与保存能力，使配置跟随模板或草稿进入后续批量生成。\n\n# 2. 用户与使用场景\n\n| 用户 | 使用场景 | 预期操作 |\n| --- | --- | --- |\n| 班主任 | 了解学生综合表现及阶段变化 | 选择五育雷达图、进步轨迹及指定深度维度，补充关注点后生成预览。 |\n| 任课教师 | 依据评价表现制定教学与辅导安排 | 选择学习态度、自主学习能力、分层教学建议及资源匹配方案。 |\n| 学校管理人员 | 统一报告结构并复用至批量生成 | 配置分析内容，生成样例预览，保存模板或草稿后继续原有流程。 |\n\n【假设】使用权限沿用原“AI评价报告”的页面权限和数据权限。学生候选名单仅来自当前报告配置允许访问的对象；本次不新增角色、权限项或跨校数据范围。\n\n# 3. 需求范围\n\n## In Scope\n\n- 侧栏、顶部页签、中央标题三处名称调整。\n- 对话框顶部的学生选择与五组多选条件，包含完整25项内容。\n- 下拉展开、勾选、本组全选与清空、选中数量、悬停完整文案及长列表滚动。\n- 只读需求摘要、独立补充要求、深度思考开关、提交校验和键盘操作。\n- 【假设】向既有生成服务传递结构化配置，适配真实生成状态及错误反馈。\n- 【假设】随模板或草稿保存与回显配置，并向后续批量生成传递相同配置。\n- 对应数据字典、数据不足反馈、行为埋点及验收用例。\n- 原型页面右上角的PRD说明入口、完整需求弹窗及文档复制下载，供研发交接使用。\n\n## Out of Scope\n\n- 改造原有报告配置、评语配置、批量参与名单、发布及导出流程。\n- 新增选项维护后台、用户自定义选项或任意新增分析分组。\n- 新建成绩、出勤、心理测评、资源库等业务数据源及独立数据采集页面。\n- 新建持续监测任务、消息通知渠道、预警阈值配置、模型训练或独立预测算法。\n- 心理临床诊断、自动处分、自动调整学生分组或其他依据模型结论执行的管理动作。\n- 将原型的示例学生、示意报告图形或“演示提交成功”作为生产业务数据及结果。\n\n“实时预警”在本次需求中表示生成时依据可用数据开展预警分析；持续监测与主动推送属于独立需求。25项选项用于声明输出内容，不代表本次新增25套独立分析算法。\n\n# 4. 功能需求列表\n\n| 功能模块 | 功能点 | 需求描述 | 优先级（P0 / P1 / P2） | 备注说明 |\n| --- | --- | --- | --- | --- |\n| 入口名称 | 统一更名 | 侧栏与顶部页签“AI评价报告”、中央标题“AI报告助手”统一显示“AI评价智能体”。 | P0 | 菜单编码、路由及原权限沿用。 |\n| 页面框架 | 保留五步流程 | 依次保留报告配置、报告模板、评语配置、批量生成报告、查看报告；本次页面位于第二步。 | P0 | 不新增步骤。 |\n| 条件布局 | 对话框内句式选择 | 五组选择器与学生选择放在同一对话框顶部，按容器宽度自然换行，下方以分隔线连接需求摘要。 | P0 | 禁止另建对话框外的独立选择卡片。 |\n| 学生选择 | 当前预览对象 | 单选学生，切换后立即更新摘要，保留分析选项、补充要求及深度思考状态。 | P0 | 【假设】候选范围来自当前报告配置。 |\n| 分析内容 | 五组25项 | 按第7.1节的组顺序、项顺序及文案展示，不遗漏、合并或增加选项。 | P0 | 共6、7、5、4、3项。 |\n| 分析内容 | 独立多选 | 每组支持多选，跨组可组合；所有选项可同时选中。取消某项仅移除该项。 | P0 | 无组间互斥关系。 |\n| 分析内容 | 全选与清空 | 操作仅影响当前组，操作后保持菜单展开；更新选中数量、复选状态及摘要。 | P0 | 不提供全页面一键清空。 |\n| 分析内容 | 收起态回显 | 未选显示“请选择”，选中1项显示名称，选中多项显示“已选N项”；悬停展示当前组完整已选名称。 | P0 | N仅统计当前组。 |\n| 分析内容 | 菜单与键盘 | 同时只展开一组；支持外部点击关闭、焦点离开关闭、Esc关闭并恢复焦点、方向下键进入复选项。 | P0 | 列表超出可用高度时内部滚动。 |\n| 需求摘要 | 自动组合 | 按字典顺序组合学生和已选内容，只展示已选分组；摘要只读，由结构化状态派生。 | P0 | 不按点击先后排序。 |\n| 补充要求 | 自由输入 | 独立输入并保存，修改学生或选择项不得覆盖该字段。支持多行文本。 | P0 | 【假设】上限2000个Unicode码点。 |\n| 深度思考 | 独立开关 | 默认关闭，开启后改变生成请求中的deepThinking；不影响深度维度选项。 | P0 | 两者不得共用状态。 |\n| 提交 | 条件与快捷键 | 已选择有效学生，且选择数大于0或补充要求去除首尾空白后非空时，允许点击发送或使用Ctrl／Command＋Enter。 | P0 | 普通Enter在输入区换行。 |\n| 生成反馈 | 状态与结果 | 【假设】接入既有生成结果流，区分生成中、成功、部分成功及失败，不用演示提示冒充真实结果。 | P0 | 第5.6节定义状态行为。 |\n| 配置复用 | 保存与回显 | 【假设】保存模板或草稿时一并保存analysisConfig，重新进入时优先回显已保存值。 | P0 | 空配置与旧版本缺字段分别处理。 |\n| 批量衔接 | 逐人复用 | 【假设】批量生成使用已保存配置，逐人替换对象并读取各自数据。第二步学生不覆盖批量参与范围。 | P0 | 沿用原有批量入口与名单。 |\n| 模板区域 | 保留原入口 | 保留默认模板、历史模板及原保存入口，不因配置变化清空补充要求。 | P0 | 【假设】回显与覆盖规则见第5.7节。 |\n| 数据反馈 | 不足与能力缺失 | 【假设】对无法输出的已选项返回对应原因，页面明确列示未生成项。 | P0 | 禁止使用示例值补齐真实结果。 |\n| 行为分析 | 埋点 | 记录页面曝光、选项变化、提交及生成结果，不上传补充正文或生成正文。 | P1 | 事件见第7.5节。 |\n| 研发交接 | PRD说明弹窗 | 原型右上角提供“PRD说明”按钮，打开包含本文九章的完整需求弹窗；支持目录定位、复制全文、下载Markdown、关闭及键盘操作。 | P0 | 交接辅助功能；不发起报告生成请求。 |\n\n# 5. 核心流程与交互说明\n\n## 5.1 页面结构与布局\n\n页面自上而下为：原有导航与五步流程 → 智能体图标、标题、副标题 → 对话框 → 原有报告模板区域。\n\n对话框内部自上而下为：\n\n1. 条件句式区：“帮我给［学生下拉］生成报告，包含［可视化分析］［深度维度］［教学建议］［实时预警］［成长预测］”。各分组使用“分组标签＋多选下拉”。\n2. 分隔线及“需求摘要 · 随选择自动更新”。\n3. 只读摘要正文。\n4. “补充要求”多行输入区。\n5. 左侧深度思考开关；右侧已选项数或校验提示、发送按钮。\n\n主操作区最大宽度1000px，居中展示。学生句式和每个“分组标签＋下拉”作为布局单元参与换行，组内标签不得与所属下拉分离。采用白底、浅色边框、圆角与绿色选中状态。桌面宽度1920、1440、1280px均不得产生页面横向溢出；换行不得改变分组顺序。\n\n布局及长菜单示例参见配套原型；Word版附有最新页面局部示意。\n\n## 5.2 初始化\n\n新配置默认仅选中“可视化分析／五育雷达图”，其余24项未选；补充要求为空，深度思考关闭。\n\n【假设】生产端优先沿用当前报告中已选择且仍有效的预览学生；没有有效选择时显示“请选择学生”。不得将原型中的“温毅宸”硬编码为生产默认学生。\n\n【假设】存在已保存analysisConfig时，完整回显其五组数组、补充要求和深度思考值，不追加默认值。旧草稿完全不存在analysisConfig字段时，按新配置默认值初始化，不自动写入数据库；经用户执行保存后持久化。\n\n## 5.3 下拉操作\n\n- 打开一组时关闭上一组；点击已展开组的触发器则关闭当前组。\n- 点击选项文字或复选框均切换该项，菜单保持展开，无额外“确定”按钮。\n- 本组“全选”选中该组全部字典项；本组“清空”移除该组全部已选项；重复操作保持相同结果。\n- 单项回显文案过长时省略，悬停显示完整已选名称，菜单内文案完整显示。\n- 菜单锚定所属下拉，优先向下展开；下方不足且上方空间更大时向上展开。左右边界距离视口至少16px。\n- 菜单最大高度340px，同时受当前视口可用空间约束；内容超出时在菜单内部滚动。“全选／清空”工具栏在内部滚动时保持可操作。\n- 点击外部、焦点移出本组或调整窗口尺寸时关闭菜单。Esc关闭后焦点回到所属触发器；触发器按方向下键时打开菜单并聚焦首个复选项。\n- 下拉触发器、全选、清空均使用非提交按钮；只有发送按钮提交生成请求。\n\n## 5.4 摘要与补充要求\n\n摘要模板为：“帮我为{学生姓名}生成评价报告，包含：{分组摘要}。”分组使用固定顺序：可视化分析、深度维度分析、教学建议、实时预警、成长预测；组间用“；”分隔，组内已选名称用“、”分隔。\n\n示例：“帮我为温毅宸生成评价报告，包含：可视化分析（五育雷达图、进步轨迹）；深度维度分析（问题解决能力、自我管理能力）；教学建议（家校协同建议）。”\n\n各组中的项目始终按第7.1节字典顺序排列。切换学生、勾选、取消、全选、清空后，同一交互周期内更新摘要与数量，不调用生成服务。\n\n| 状态 | 摘要正文 | 发送按钮旁提示 |\n| --- | --- | --- |\n| 未选学生 | 请选择学生，报告需求将自动更新。 | 请先选择学生 |\n| 有学生、有选择项 | 按上述摘要模板展示。 | 已选 N 项分析内容 |\n| 有学生、无选择项、有有效补充 | 帮我为{学生姓名}生成评价报告，具体要求见下方补充内容。 | 按补充要求生成报告 |\n| 有学生、无选择项、补充为空白 | 请选择分析内容，或在下方补充您的报告需求。 | 请选择分析内容或填写补充要求 |\n\n“补充要求”与摘要使用独立字段。占位提示为“补充报告要求，例如：重点分析本学期的变化，并提供可用于课堂的教学建议。”切换学生、分析内容及深度思考状态均不得重写补充正文。\n\n【假设】补充要求最多2000个Unicode码点，前端显示字数并校验，服务端执行同一上限校验；首尾空白在提交时去除，内部换行及空白保留。超限时显示“补充要求最多2000字”，禁用发送并保留原文。补充要求用于补充内容、侧重点和表达方式，不自动勾选或取消结构化选项。\n\n## 5.5 深度思考与发送\n\n深度思考初始为关闭，点击切换开启／关闭并即时回显。深度思考控制生成模式，深度维度控制分析内容，两者分别存储。\n\n发送条件为：studentId有效，并且“全局已选项数＞0”或“trim后的补充要求非空”。【假设】生产端还应满足补充未超限、当前未处于生成中及原有生成权限校验。\n\n无效状态下按钮禁用，鼠标提示及按钮旁文案解释原因。输入区支持Ctrl＋Enter与Command＋Enter，执行同一校验；中文输入法组字期间不得触发快捷提交。\n\n## 5.6 生成与结果承接【假设】\n\n点击发送时固定本次学生、analysisConfig及报告上下文快照，提交给既有生成服务。摘要属于展示字段，服务端不得从摘要恢复选择状态。生成内容由既有能力承接；没有真实可用的生成服务时，开发联调界面必须明确标识演示环境。\n\n| 状态 | 页面行为 | 后续操作 |\n| --- | --- | --- |\n| 生成中 | 发送按钮展示“生成中”并禁用；学生、五组选择、补充要求及深度思考暂时禁用。 | 使用既有流式或任务状态机制获取结果。 |\n| 成功 | 真实内容进入既有报告或草稿预览，提示“生成成功”；配置完整保留。 | 用户继续调整、保存或进入原有后续步骤。 |\n| 部分成功 | 展示已生成内容，并列出“以下内容未生成”及对应原因。 | 支持调整选择后重新生成，不补造缺失部分。 |\n| 失败 | 显示失败原因及重试入口，不以旧内容或本地回显冒充本次结果。 | 恢复编辑，保留本次所有输入。 |\n\n接口仅受理请求或返回任务ID时仍属于生成中，不得提前显示生成成功。生成完成后恢复编辑。已有结果对应上一次成功快照；修改学生、选项、补充要求或深度思考后，标记“配置已修改，请重新生成”，不得将旧结果标为当前配置生成。\n\n连续点击及快捷键不得并发创建相同请求。同一次网络重试沿用requestId，并重放原请求快照；用户已修改学生或配置时，操作改为“重新生成”并使用新的requestId，不得以旧标识提交新参数。服务端对同一requestId收到不同参数时返回请求标识冲突。已收到明确失败结果后，用户点击重新生成时创建新的requestId。页面关闭后返回的响应不得重新打开页面或覆盖其他报告。\n\n原型的“演示提交成功”卡片仅用于核对本地参数。生产端复用原有报告预览和结果展示，不新增重复的报告结果区域。\n\n## 5.7 模板草稿保存与批量衔接【假设】\n\n- 沿用原有“保存模板／保存草稿”操作，将analysisConfig与对应模板或草稿版本一并保存；保存失败保留编辑状态并提示重试，不显示保存成功。\n- 保存编辑草稿时，允许保存尚未生成的新配置，但必须至少选择一项或填写有效补充，且补充未超限；仅保存通用配置时不要求已选择预览学生。全部未选且补充为空白时禁止保存，提示“请选择分析内容或填写补充要求”。\n- 保存为可复用模板或进入第三步前，当前学生及analysisConfig须与最近一次成功或部分成功的生成快照一致。未生成、生成失败或配置已修改时，提示“请先按当前配置生成预览”，不允许将旧预览绑定新配置；部分成功时保留未生成项说明后继续原流程。\n- 保存尚未生成的新配置为编辑草稿时，保留历史预览用于查看，但标记其不属于当前配置；不得将该历史预览记为新草稿版本的有效生成结果。\n- 仅执行生成不等于已保存。进入下一步时沿用平台现有保存机制；存在未保存配置时阻止静默丢失，提供保存后继续或取消。\n- 从历史模板切换到另一模板前，若当前存在未保存修改，先提示“切换模板将替换当前分析配置，是否继续”；取消则保持原值，确认后载入目标模板配置。\n- 历史模板有analysisConfig时完整覆盖当前配置，包括补充要求；历史模板缺少该字段时按第5.2节旧版本规则初始化。普通学生或选项切换不触发此覆盖行为。\n- Step2选中的学生是当前预览对象。Step4仍使用原报告配置的完整参与范围；批量生成逐人读取其数据并应用同一已保存analysisConfig，不复用预览学生的姓名、数值或结论。\n- 已保存“五组空数组＋非空补充要求”是有效配置。回显及批量生成不得将其当作旧版本缺字段，也不得补选五育雷达图。\n\n## 5.8 原型页面PRD说明\n\n右上角顶部操作区提供“PRD说明”按钮。按钮用于查阅当前页面版本的完整研发需求，打开后不改变学生、已选项、补充要求、深度思考或已展示的演示结果。\n\n- 使用模态弹窗展示“AI评价智能体 页面修改PRD”，显示文档版本V1.1。弹窗包含本文全部九个一级章节、25项选项字典、请求示例及33条验收用例；不只展示摘要或截取部分正文。\n- 提供九章目录和独立正文滚动区；点击目录定位到对应章节。长表格在正文区域内横向滚动，页面本身不产生横向溢出。1920、1440、1280px宽度及720px高窗口均能操作关闭入口和目录。\n- 弹窗打开时关闭原型内的选择菜单，并锁定背景页面滚动；焦点进入弹窗，Tab及Shift＋Tab在弹窗内循环。支持关闭按钮、Esc及点击遮罩关闭，关闭后恢复原滚动状态并将焦点交还“PRD说明”按钮。弹窗内Esc不再触发选择菜单的关闭逻辑。\n- “复制全文”复制完整Markdown内容；成功后提示“PRD全文已复制”。浏览器剪贴板权限受限或调用失败时，提示“复制失败，请使用下载PRD”，保留弹窗正文和其他操作能力。\n- “下载PRD”通过浏览器下载当前版本的Markdown文件，文件内容须与弹窗正文的来源一致，不使用历史版本或空文件。\n- PRD正文和原始Markdown随原型文件内嵌，外部访问及直接打开本地HTML均可阅读，无需额外请求文档接口或加载第三方脚本。发布前核对内嵌文本与配套PRD文件完全一致。\n\n本节属于原型研发交接功能；正式业务端的页面改造和接口接入按其余章节实施。原型仅使用本地演示数据，PRD中标注【假设】的生产接入要求不得被理解为原型已实现或现网接口已核验。\n\n# 6. 异常场景与边界条件\n\n除原型已实现的空值、单弹层和菜单操作外，下表中的生产校验与生成异常处置均为【假设】实现规则。\n\n| 场景 | 处理规则 |\n| --- | --- |\n| 学生名单加载中或为空 | 加载中禁用学生选择与发送；空名单显示“当前报告范围内暂无可用学生”，保留其他编辑配置。 |\n| 学生已移出报告范围或权限失效 | 服务端拒绝生成，前端清除失效学生并重新加载候选范围；不自动改成另一学生提交。 |\n| 某组全部清空 | 仅移除该组摘要；其他组选项及补充要求保持不变。 |\n| 全部清空且仅有空格、换行 | 视为无有效补充，禁用发送；不得请求生成服务。 |\n| 全部清空但有有效补充 | 允许提交，五组均传空数组；由既有自由输入生成能力承接。 |\n| 选项重复或组别不匹配 | 前端集合去重；服务端校验编码归属，存在未知编码或错误归属时拒绝，不静默丢弃。 |\n| 旧模板缺少配置字段 | 按新配置默认值初始化；已存在配置中的显式空数组完整保留。 |\n| 保存配置含未知版本或失效编码 | 保留原存储，不覆盖保存；提示“配置版本不兼容，请更新配置后重试”。未知编码不得显示为已成功选中。 |\n| 数据不足 | 对所选项返回数据不足状态与具体缺项；不得将未知分数记为0、补齐不存在的曲线或据此输出风险结论。 |\n| 多阶段、多主体数据不完整 | 明确说明缺少阶段或评价主体；不把单阶段、单主体内容标为对比分析。 |\n| 心理相关数据不可用或无访问权限 | 对心理风险项返回原因；不得用积分高低直接推断心理状态。相关结论作为需人工核实的关注提示。 |\n| 预测或资源服务未接入 | 对对应选项返回能力不支持说明；资源仅引用已接入且有有效标识的记录。 |\n| 网络失败或服务超时 | 保留输入，结束本次加载态，展示“生成失败，请重试”；未改输入时按原快照和同一requestId查询或重试，修改输入后改为新requestId重新生成，避免重复创建或错用快照。 |\n| 服务端仅返回受理成功 | 持续使用生成中状态，直到收到最终结果；服务错误不得转换成成功。 |\n| 全部所选内容均无法生成 | 无有效生成正文时展示失败及逐项原因；存在可独立生成的补充要求正文时按部分成功承接。 |\n| 用户输入包含HTML或脚本 | 摘要、补充回显及错误信息按纯文本渲染；生成正文沿用平台安全渲染机制。 |\n| 多次生成或页面切换 | 结果绑定对应requestId、报告、预览学生及配置快照；过期响应不覆盖其他页面或请求结果。 |\n| PRD复制权限受限 | 显示复制失败提示并引导下载；不关闭弹窗，不改变报告配置。 |\n| PRD内容版本更新 | 发布时同步替换内嵌原始Markdown与渲染正文；二者及配套PRD文件不一致时不得发布。 |\n\n# 7. 数据口径与埋点需求\n\n## 7.1 分组选项字典\n\n以下分组、显示文案及排列顺序与最新原型一致。【假设】稳定编码用于生产请求、保存、回显及埋点；编码不得随文案调整改变。组内使用数组并按字典顺序序列化。\n\n| 分组及键 | 选项编码 | 显示文案 | 输出内容边界 |\n| --- | --- | --- | --- |\n| 可视化分析 visual | VIS_01 | 五育雷达图 | 基于已有德智体美劳指标映射及统一量纲展示五育分布。 |\n| 可视化分析 visual | VIS_02 | 优势短板可视化 | 按已有评价口径呈现优势及待提升项，说明比较依据。 |\n| 可视化分析 visual | VIS_03 | 进步轨迹 | 展示统计范围内已发生的历史变化，不包含未来预测。 |\n| 可视化分析 visual | VIS_04 | 评价指标分布图 | 按已有指标层级展示有效评价的分布。 |\n| 可视化分析 visual | VIS_05 | 阶段表现对比图 | 比较两个及以上已发生阶段的表现，使用可比口径。 |\n| 可视化分析 visual | VIS_06 | 多主体评价对比图 | 按数据中实际存在的评价主体比较表现，不虚设主体。 |\n| 深度维度 dimension | DIM_01 | 学习态度 | 分析已有学习投入、任务完成等观察记录。 |\n| 深度维度 dimension | DIM_02 | 创新能力 | 分析已有创意表达、探索与创新实践证据。 |\n| 深度维度 dimension | DIM_03 | 协作能力 | 分析团队参与、合作分工及共同完成任务的表现。 |\n| 深度维度 dimension | DIM_04 | 自主学习能力 | 分析自主规划、独立学习及自我反思的表现。 |\n| 深度维度 dimension | DIM_05 | 问题解决能力 | 分析问题识别、方案形成、执行与改进的表现。 |\n| 深度维度 dimension | DIM_06 | 沟通表达能力 | 分析表达、倾听、交流及反馈的表现。 |\n| 深度维度 dimension | DIM_07 | 自我管理能力 | 分析时间安排、自律及任务管理的表现。 |\n| 教学建议 advice | ADV_01 | 学习状态诊断 | 依据学习证据描述当前学习状态及需要关注的问题。 |\n| 教学建议 advice | ADV_02 | 资源匹配方案 | 输出匹配理由及有效资源标识，不虚构资源链接。 |\n| 教学建议 advice | ADV_03 | 分层教学建议 | 输出适合当前学生的教学目标、任务层次和支持方式。 |\n| 教学建议 advice | ADV_04 | 个性化辅导方案 | 输出辅导目标、行动安排及跟进建议。 |\n| 教学建议 advice | ADV_05 | 家校协同建议 | 输出家庭与学校可分别落实的协同建议。 |\n| 实时预警 warning | ALT_01 | 偏科预警 | 基于可比学科表现识别不均衡，说明数据依据。 |\n| 实时预警 warning | ALT_02 | 心理风险预警 | 基于获授权的适用证据输出关注提示，需人工核实。 |\n| 实时预警 warning | ALT_03 | 学习投入下降预警 | 根据连续历史证据识别投入下降，说明比较范围。 |\n| 实时预警 warning | ALT_04 | 出勤异常预警 | 基于可用考勤记录提示出勤异常，不以评价次数替代考勤。 |\n| 成长预测 forecast | FOR_01 | 潜力领域发展曲线 | 基于已有预测能力呈现潜力领域的发展推演及依据。 |\n| 成长预测 forecast | FOR_02 | 五育发展趋势预测 | 基于已有预测能力推演五育发展方向，区分历史与预测区间。 |\n| 成长预测 forecast | FOR_03 | 成长目标达成预测 | 对已配置且可度量的成长目标输出达成推演及前提。 |\n\n【假设】本次使用字典版本1。前后端共享同一份字典及编码白名单；不通过中文文案识别选项，不依赖前端DOM顺序作为存储标识。各项内容定义约束生成请求与输出，不新增统计权重、预警阈值或预测公式。\n\n## 7.2 统计与内容口径\n\n全局已选项数N＝五组去重后选项数之和，范围0至25；本组“已选N项”只统计当前组。深度思考及补充要求不计入项数。\n\n【假设】真实数据使用当前报告第一步所关联活动、统计范围及平台既有有效记录口径。缺少量纲、指标映射或可比时间段时返回对应原因；不将积分总计、积分余额或发卡次数直接替代五育能力值。\n\n历史“进步轨迹／阶段表现对比”与未来“成长预测”分别处理。预测展示需标识预测区间和依据；本需求不建立新的预测模型。多主体对比仅使用真实可区分的主体数据。\n\n## 7.3 生成请求逻辑契约【假设】\n\n复用现有Step2生成接口并扩展参数；本节定义前后端必须映射的业务字段，不指定未经核验的URL。已有报告、学生、模板ID字段可由适配层映射，但analysisConfig的结构和选项编码保持一致。\n\n| 字段 | 类型 | 必填 | 规则 |\n| --- | --- | --- | --- |\n| requestId | string | 是 | 本次生成的请求标识，网络重试保持不变；明确重新生成时更新。 |\n| reportId | string | 是 | 当前报告配置ID；关联活动、统计范围和参与范围由服务端据此读取。 |\n| studentId | string | 是 | 当前预览学生ID；服务端校验其属于报告范围且调用者有权限。 |\n| templateId | string或null | 是 | 使用既有模板ID；新建且尚未保存时允许null，由现有生成流程处理。 |\n| analysisConfig.version | integer | 是 | 本版固定1。 |\n| analysisConfig.options | object | 是 | 固定包含visual、dimension、advice、warning、forecast五个数组。 |\n| analysisConfig.options各组 | string[] | 是 | 0至该组项数个稳定编码；空组传[]，不得省略或传中文名称。 |\n| analysisConfig.notes | string | 是 | 去除首尾空白后的补充要求，允许空字符串，上限2000个Unicode码点。 |\n| analysisConfig.deepThinking | boolean | 是 | true为开启，false为关闭；不由dimension数组推导。 |\n\n请求示例中的ID均为占位值：\n\n```json\n{\n  \"requestId\": \"request_example_001\",\n  \"reportId\": \"report_example_001\",\n  \"studentId\": \"student_example_001\",\n  \"templateId\": null,\n  \"analysisConfig\": {\n    \"version\": 1,\n    \"options\": {\n      \"visual\": [\"VIS_01\", \"VIS_03\"],\n      \"dimension\": [\"DIM_05\", \"DIM_07\"],\n      \"advice\": [\"ADV_05\"],\n      \"warning\": [],\n      \"forecast\": []\n    },\n    \"notes\": \"重点关注课堂协作表现。\",\n    \"deepThinking\": false\n  }\n}\n```\n\n服务端执行登录及数据权限、对象有效性、版本、组别归属、编码白名单、长度及至少一项有效需求校验。学校及用户身份来自可信登录态，不能接受客户端自行声明的数据权限范围。\n\n服务端将稳定编码映射为内容指令，与可信报告数据、模板和独立补充要求组合后调用既有生成能力。补充文本作为用户需求处理，不作为服务端工具调用、权限变更或数据范围修改指令。前端摘要不作为选择状态或权限的可信来源。\n\n## 7.4 返回结果与持久化逻辑契约【假设】\n\n适配层需将既有返回结果映射为以下含义，沿用平台原有响应包结构：\n\n| 字段或状态 | 定义 |\n| --- | --- |\n| generationId | 真实生成任务或调用标识。 |\n| draftId／内容引用 | 生成成功后的既有草稿ID或可预览内容引用；不得用请求ID冒充生成内容。 |\n| generationState | PROCESSING、SUCCEEDED、PARTIAL、FAILED，分别对应生成中、成功、部分成功、失败。 |\n| analysisResults | 最终状态时按每个已选编码返回结果；仅补充要求场景允许为空数组。 |\n| analysisResults.optionCode | 对应第7.1节稳定编码。 |\n| analysisResults.state | GENERATED、DATA_INSUFFICIENT、UNSUPPORTED，分别表示已生成、数据不足、能力未接入。 |\n| analysisResults.message | 未生成项的可展示原因；不包含内部堆栈、凭据或其他学生信息。 |\n| errorCode／message | 整体失败时的业务错误码及可展示说明，映射平台既有错误规范。 |\n\n整体成功表示真实正文已生成且所选项均有有效输出；部分成功表示已有正文但存在未生成项；全部无法输出且没有有效正文时为失败。对数据不足、能力缺失的项目不得仅返回空白正文并标为成功。\n\nanalysisConfig作为一个完整对象绑定模板或草稿版本保存。版本、五组数组、notes及deepThinking必须同次保存、同次读取；显式空数组具有业务意义。生成请求快照用于结果归属校验，保存接口失败不得清除当前编辑值。既有历史报告正文不回填、不重算。\n\n## 7.5 埋点需求【假设】\n\n| 事件 | 触发时机 | 事件属性 |\n| --- | --- | --- |\n| ai_agent_view | 页面初始化完成 | 入口来源、配置版本、是否有历史配置。 |\n| ai_agent_options_change | 勾选、取消、全选或清空完成 | 分组键、动作、变更编码、本组项数、全局项数；一次全选或清空计一次事件。 |\n| ai_agent_submit | 校验通过并发出真实请求 | requestId、五组编码、全局项数、是否有补充、补充长度、深度思考状态。 |\n| ai_agent_generate_result | 本次生成进入最终状态 | requestId、生成状态、耗时、未生成编码及原因分类。 |\n| ai_agent_config_save | 保存操作返回结果 | 配置版本、保存成功或失败、错误分类。 |\n\n统计生成成功率＝SUCCEEDED次数／进入最终状态的生成次数；部分成功率单列PARTIAL次数／同一分母。PROCESSING不计入最终状态分母；同一requestId的网络重试不重复计为新增生成。\n\n埋点不记录学生姓名、补充要求正文、心理相关原始记录或生成正文。requestId用于关联事件；身份信息复用平台合规的公共埋点字段。\n\n# 8. 风险、依赖与限制\n\n| 依赖或风险 | 实施约束 |\n| --- | --- |\n| 既有接口与存储未在原型中核验 | 【假设】按第7.3和7.4节逻辑契约扩展现有接口及模板／草稿存储，不将示例URL、ID或返回结构声明为现网事实。 |\n| 基础数据与高级能力不齐全 | 五育映射、可比成绩、连续评价、主体标识、考勤、获授权的心理相关数据、资源库及预测服务分别按选项校验，不要求为本次页面改造新建数据系统。 |\n| 评价口径与生成内容不一致 | 复用既有统计、指标和模板口径；前端不自行计算能力分、预警等级或预测结果。 |\n| 原型与生产行为不同 | 演示学生和本地提交回显仅用于交互核验；生产须使用真实对象权限、真实请求和真实生成状态。 |\n| 批量配置误用单人信息 | 保存通用配置而非预览学生结论；后续每位学生使用各自数据重新生成。 |\n| 命名兼容 | 只调整三处展示名称，不因更名改变菜单权限编码、历史记录标识或路由兼容性。 |\n| 历史草稿兼容 | 区分缺字段与显式空配置；未知配置版本保留原值并提示处理，不静默覆盖。 |\n\n【假设】发布顺序为共享字典与后端兼容字段 → 生成及保存接口适配 → 前端页面 → 联调验收。旧客户端未传analysisConfig时沿用原有生成流程；新增配置作为可选扩展存储，不破坏旧草稿读取。请求使用目标环境实际配置的HTTP或HTTPS协议，不在前端擅自改写协议。\n\n上线验收重点为配置一致性、结果状态真实性及批量复用正确性；业务分析算法的新增与调优另立需求。\n\n【假设】出现新增配置功能异常时，复用平台已有发布或功能开关机制回退至原自由输入流程，已保存扩展配置保留；本次不新增运行期开关管理后台。\n\n# 9. 验收标准\n\n所有P0条目通过后交付；P1埋点在启用对应统计前完成。下表中的生产接入场景按本文【假设】约定执行，测试不以原型本地回显代替服务联调。\n\n| 编号 | 场景与操作 | 通过标准 |\n| --- | --- | --- |\n| AC01 | 打开原报告模板步骤 | 侧栏、顶部页签、中央标题均为“AI评价智能体”；原五步顺序及当前步骤正确。 |\n| AC02 | 检查条件区位置 | 五组与学生句式均在同一对话框内部顶部；对话框上方没有独立选择卡片。 |\n| AC03 | 核对字典 | 依次为6、7、5、4、3项，共25项；文案、编码、顺序与第7.1节一致且无重复。 |\n| AC04 | 初始化新配置 | 仅选五育雷达图，深度思考关闭、补充为空；生产学生按第5.2节初始化。 |\n| AC05 | 同组及跨组多选 | 可同时选中25项，无互斥；单项回显名称、多项显示本组数量，悬停名称完整。 |\n| AC06 | 执行本组全选、清空 | 仅影响当前组，菜单保持展开；其他组、补充文字、学生及深度思考不变。 |\n| AC07 | 乱序勾选后检查摘要 | 摘要按固定字典顺序展示，仅包含已选组；与点击顺序无关。 |\n| AC08 | 输入补充后切换学生及选项 | 摘要和数量及时更新，补充正文逐字保留，深度思考状态不变。 |\n| AC09 | 切换深度思考 | 仅deepThinking变化，dimension数组及其选中数量不变。 |\n| AC10 | 清空全部并输入空格换行 | 发送禁用并显示正确引导；前后端均不接受无有效需求的生成。 |\n| AC11 | 清空全部，仅填写有效补充 | 允许发送；五组传[]，补充正文经首尾去空白后传递。 |\n| AC12 | 无学生或学生失效 | 无学生时禁用；服务端拒绝无权限或失效对象，不自动替换学生生成。 |\n| AC13 | 检查长度与文本回显 | 2000码点允许提交、2001码点拦截；内部换行保留，HTML按纯文本回显。 |\n| AC14 | 检查鼠标与键盘 | 外部关闭、单弹层、Esc恢复焦点、方向下键进入、普通Enter换行与快捷发送均符合第5节。 |\n| AC15 | 打开7项长菜单并滚动 | 末项可见可选，全选／清空可操作；1920、1440、1280宽度及720高窗口均无菜单裁切或横向溢出。 |\n| AC16 | 检查真实请求 | 含当前报告、预览学生和完整analysisConfig；全部编码归属正确，不依赖摘要反向解析。 |\n| AC17 | 点击选项、全选或清空 | 不触发表单提交或生成接口；仅发送和有效快捷键发起请求。 |\n| AC18 | 模拟生成中及连续点击 | 编辑区按规则禁用，同一请求不并发创建；返回任务ID仍显示生成中。 |\n| AC19 | 模拟成功、部分成功、失败 | 真实结果由原预览承接；未生成项及原因明确；失败不清空输入，不提示演示或虚假成功。 |\n| AC20 | 模拟数据不足及全部不可用 | 不生成虚构分数、曲线或心理结论；全部无正文时显示失败，部分输出时显示部分成功。 |\n| AC21 | 保存并重新打开 | version、五组数组、补充及开关完全回显；保存失败保留当前编辑值。 |\n| AC22 | 对比旧草稿和有效空配置 | 旧草稿缺字段时默认选五育；保存的空数组＋补充要求回显时仍为空数组。 |\n| AC23 | 切换历史模板或离开步骤 | 未保存内容经确认后才替换或离开；取消操作不丢失输入。 |\n| AC24 | 保存后执行批量生成 | 参与范围沿用报告配置，每人使用相同内容配置和各自数据，不复用预览学生结果。 |\n| AC25 | 结果返回前后修改或切页 | 生成中禁止修改；完成后修改标记需重新生成；过期结果不覆盖其他请求或页面。 |\n| AC26 | 校验未知编码、版本及网络重试 | 服务端明确拒绝无效配置；网络重试沿用requestId，明确重新生成使用新requestId。 |\n| AC27 | 检查埋点 | 选项、提交及结果事件可关联，同一请求重试不重复计数；无学生姓名、补充正文及生成正文。 |\n| AC28 | 网络超时后重试或修改输入 | 不修改时重放原快照并沿用requestId；修改时新建requestId；同标识不同参数被服务端拒绝。 |\n| AC29 | 修改配置后保存或进入下一步 | 可保存有效配置为编辑草稿，旧预览标记为不匹配；保存可复用模板或进入下一步前须重新生成对应预览。 |\n| AC30 | 无预览学生或全部空需求时保存 | 有有效需求且未选预览学生时可存编辑草稿；全部未选且补充为空白时禁止保存，不产生可复用模板。 |\n| AC31 | 点击右上角PRD说明及目录 | 打开模态弹窗，显示V1.1全文及九章目录；章节定位正确，25项字典、请求示例及33条验收条目完整可读。 |\n| AC32 | 关闭PRD及检查配置 | 关闭按钮、Esc、遮罩均可关闭；焦点归还入口，背景滚动恢复；Tab不逃出弹窗，报告配置及补充文字不变。 |\n| AC33 | 复制下载及外部访问 | 复制与下载内容与当前PRD源文件一致；复制受限时给出明确提示；公开链接可直接访问，刷新后页面及PRD正常，无需登录或本机服务。 |\n\n研发自检顺序为：字典与页面结构核对 → 组件交互及校验 → 生成和保存接口联调 → 旧草稿兼容与批量回归 → 三种桌面宽度及长菜单检查。原型已完成本地交互核验，生产接口、数据权限、保存及批量场景须按上述条目重新验收。\n"</script>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    (() => {
+      'use strict';
+      const groups = [
+        {id:'visual', label:'可视化分析', summaryLabel:'可视化分析', icon:'radar', options:['五育雷达图','优势短板可视化','进步轨迹','评价指标分布图','阶段表现对比图','多主体评价对比图']},
+        {id:'dimension', label:'深度维度', summaryLabel:'深度维度分析', icon:'focus', options:['学习态度','创新能力','协作能力','自主学习能力','问题解决能力','沟通表达能力','自我管理能力']},
+        {id:'advice', label:'教学建议', summaryLabel:'教学建议', icon:'book', options:['学习状态诊断','资源匹配方案','分层教学建议','个性化辅导方案','家校协同建议']},
+        {id:'warning', label:'实时预警', summaryLabel:'实时预警', icon:'bell', options:['偏科预警','心理风险预警','学习投入下降预警','出勤异常预警']},
+        {id:'forecast', label:'成长预测', summaryLabel:'成长预测', icon:'trend', options:['潜力领域发展曲线','五育发展趋势预测','成长目标达成预测']}
+      ];
+      const selected = Object.fromEntries(groups.map(group => [group.id, new Set(group.id === 'visual' ? [group.options[0]] : [])]));
+      const $ = id => document.getElementById(id);
+      const studentSelect = $('studentSelect');
+      const notes = $('notes');
+      const sendButton = $('sendButton');
+      const historyDialog = $('historyDialog');
+      const prdDialog = $('prdDialog');
+      let activeGroup = null;
+      let deepThinking = false;
+      let toastTimer;
+
+      function icon(name) {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+        svg.classList.add('icon');
+        svg.setAttribute('aria-hidden','true');
+        const use = document.createElementNS('http://www.w3.org/2000/svg','use');
+        use.setAttribute('href','#i-' + name);
+        svg.append(use);
+        return svg;
+      }
+
+      function createGroup(group) {
+        const container = document.createElement('div');
+        container.className = 'analysis-group';
+        container.dataset.group = group.id;
+        const label = document.createElement('div');
+        label.className = 'group-label';
+        label.id = group.id + '-label';
+        label.append(icon(group.icon),document.createTextNode(group.label));
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'select-trigger';
+        trigger.id = group.id + '-trigger';
+        trigger.setAttribute('aria-expanded','false');
+        trigger.setAttribute('aria-controls',group.id + '-menu');
+        trigger.setAttribute('aria-labelledby',label.id + ' ' + group.id + '-value');
+        const value = document.createElement('span');
+        value.id = group.id + '-value';
+        value.className = 'trigger-text';
+        trigger.append(value,icon('down'));
+        const menu = document.createElement('div');
+        menu.className = 'select-menu';
+        menu.id = group.id + '-menu';
+        menu.hidden = true;
+        menu.setAttribute('role','group');
+        menu.setAttribute('aria-labelledby',label.id);
+        const tools = document.createElement('div');
+        tools.className = 'menu-tools';
+        const menuTitle = document.createElement('span');
+        menuTitle.className = 'menu-title';
+        menuTitle.textContent = '可多选';
+        const actions = document.createElement('div');
+        actions.className = 'menu-actions';
+        for (const [action, text] of [['all','全选'],['clear','清空']]) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'text-action';
+          button.textContent = text;
+          button.setAttribute('aria-label',group.label + text);
+          button.addEventListener('click',() => {
+            selected[group.id].clear();
+            if (action === 'all') group.options.forEach(option => selected[group.id].add(option));
+            update();
+          });
+          actions.append(button);
+        }
+        tools.append(menuTitle,actions);
+        menu.append(tools);
+        group.options.forEach((option,index) => {
+          const row = document.createElement('label');
+          row.className = 'menu-option';
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.value = option;
+          checkbox.id = group.id + '-option-' + index;
+          checkbox.addEventListener('change',() => {
+            if (checkbox.checked) selected[group.id].add(option);
+            else selected[group.id].delete(option);
+            update();
+          });
+          row.append(checkbox,document.createTextNode(option));
+          menu.append(row);
+        });
+        trigger.addEventListener('click',() => activeGroup === group.id ? closeMenu() : openMenu(group.id));
+        trigger.addEventListener('keydown',event => {
+          if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            openMenu(group.id);
+            menu.querySelector('input').focus();
+          }
+        });
+        container.append(label,trigger,menu);
+        return container;
+      }
+
+      function closeMenu(restoreFocus = false) {
+        if (!activeGroup) return;
+        const id = activeGroup;
+        $(id + '-menu').hidden = true;
+        $(id + '-trigger').setAttribute('aria-expanded','false');
+        $(id + '-trigger').closest('.analysis-group').classList.remove('open-up');
+        activeGroup = null;
+        if (restoreFocus) $(id + '-trigger').focus();
+      }
+
+      function openMenu(id) {
+        closeMenu();
+        activeGroup = id;
+        const menu = $(id + '-menu');
+        const trigger = $(id + '-trigger');
+        const container = trigger.closest('.analysis-group');
+        menu.hidden = false;
+        menu.style.maxHeight = '';
+        menu.scrollTop = 0;
+        menu.style.left = trigger.offsetLeft + 'px';
+        menu.style.right = 'auto';
+        trigger.setAttribute('aria-expanded','true');
+        let menuRect = menu.getBoundingClientRect();
+        const horizontalShift = menuRect.right > window.innerWidth - 16
+          ? window.innerWidth - 16 - menuRect.right
+          : menuRect.left < 16 ? 16 - menuRect.left : 0;
+        if (horizontalShift) menu.style.left = trigger.offsetLeft + horizontalShift + 'px';
+        menuRect = menu.getBoundingClientRect();
+        const triggerRect = trigger.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - triggerRect.bottom - 24;
+        const spaceAbove = triggerRect.top - 24;
+        const opensUp = menuRect.height > spaceBelow && spaceAbove > spaceBelow;
+        container.classList.toggle('open-up',opensUp);
+        menu.style.maxHeight = Math.max(80,Math.min(340,opensUp ? spaceAbove : spaceBelow)) + 'px';
+      }
+
+      function totalSelections() {
+        return groups.reduce((count,group) => count + selected[group.id].size,0);
+      }
+
+      function studentName() {
+        return studentSelect.value ? studentSelect.selectedOptions[0].textContent : '';
+      }
+
+      function buildSummary() {
+        const parts = groups.map(group => {
+          const options = group.options.filter(option => selected[group.id].has(option));
+          return options.length ? group.summaryLabel + '（' + options.join('、') + '）' : '';
+        }).filter(Boolean);
+        const name = studentName();
+        if (!name) return '请选择学生，报告需求将自动更新。';
+        if (!parts.length) return notes.value.trim() ? '帮我为' + name + '生成评价报告，具体要求见下方补充内容。' : '请选择分析内容，或在下方补充您的报告需求。';
+        return '帮我为' + name + '生成评价报告，包含：' + parts.join('；') + '。';
+      }
+
+      function isValid() {
+        return Boolean(studentSelect.value && (totalSelections() > 0 || notes.value.trim()));
+      }
+
+      function update() {
+        groups.forEach(group => {
+          const values = group.options.filter(option => selected[group.id].has(option));
+          const trigger = $(group.id + '-trigger');
+          $(group.id + '-value').textContent = values.length === 0 ? '请选择' : values.length === 1 ? values[0] : '已选' + values.length + '项';
+          trigger.classList.toggle('has-selection',values.length > 0);
+          trigger.title = values.length ? group.label + '：' + values.join('、') : group.label + '：请选择';
+          $(group.id + '-menu').querySelectorAll('input').forEach(input => {
+            input.checked = selected[group.id].has(input.value);
+            input.parentElement.classList.toggle('selected',input.checked);
+          });
+        });
+        $('summary').textContent = buildSummary();
+        $('summary').classList.toggle('empty',!studentSelect.value || (!totalSelections() && !notes.value.trim()));
+        sendButton.disabled = !isValid();
+        const status = !studentSelect.value ? '请先选择学生' : !isValid() ? '请选择分析内容或填写补充要求' : totalSelections() ? '已选 ' + totalSelections() + ' 项分析内容' : '按补充要求生成报告';
+        $('selectionStatus').textContent = status;
+        sendButton.title = isValid() ? '发送报告需求（本地演示）' : status;
+      }
+
+      function showToast(text) {
+        clearTimeout(toastTimer);
+        $('toast').textContent = text;
+        $('toast').classList.add('visible');
+        toastTimer = setTimeout(() => $('toast').classList.remove('visible'),2200);
+      }
+
+      $('analysisGrid').append(...groups.map(createGroup));
+      studentSelect.addEventListener('change',update);
+      notes.addEventListener('input',update);
+      $('thinkingToggle').addEventListener('click',() => {
+        deepThinking = !deepThinking;
+        $('thinkingToggle').setAttribute('aria-pressed',String(deepThinking));
+        $('thinkingState').textContent = deepThinking ? '开启' : '关闭';
+      });
+      $('reportForm').addEventListener('submit',event => {
+        event.preventDefault();
+        if (!isValid()) return;
+        closeMenu();
+        $('resultSummary').textContent = buildSummary();
+        $('resultNotes').textContent = notes.value.trim() || '未填写';
+        $('resultThinking').textContent = deepThinking ? '开启' : '关闭';
+        $('resultCard').hidden = false;
+        $('resultTitle').focus({preventScroll:true});
+        showToast('演示提交成功');
+      });
+      notes.addEventListener('keydown',event => {
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey) && !event.isComposing) {
+          event.preventDefault();
+          if (isValid()) $('reportForm').requestSubmit();
+        }
+      });
+      document.addEventListener('click',event => {
+        if (activeGroup && !$(activeGroup + '-trigger').closest('.analysis-group').contains(event.target)) closeMenu();
+      });
+      document.addEventListener('focusin',event => {
+        if (activeGroup && !$(activeGroup + '-trigger').closest('.analysis-group').contains(event.target)) closeMenu();
+      });
+      document.addEventListener('keydown',event => {
+        if (prdDialog.open) return;
+        if (event.key === 'Escape' && activeGroup) {
+          event.preventDefault();
+          closeMenu(true);
+        }
+      });
+      window.addEventListener('resize',() => closeMenu());
+      $('closeResult').addEventListener('click',() => {
+        $('resultCard').hidden = true;
+        sendButton.focus();
+      });
+      $('templateButton').addEventListener('click',() => showToast('已选择默认报告模板'));
+      $('historyButton').addEventListener('click',() => historyDialog.showModal());
+      $('closeHistory').addEventListener('click',() => historyDialog.close());
+      historyDialog.addEventListener('click',event => {
+        const rect = historyDialog.getBoundingClientRect();
+        if (event.target === historyDialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) historyDialog.close();
+      });
+
+      const prdMarkdown = JSON.parse($('prdSource').textContent);
+      const prdReadingPane = $('prdReadingPane');
+      const prdNavigation = $('prdNavigation');
+      const prdHeadings = [...$('prdDocument').querySelectorAll('h2[id]')];
+      let prdBodyOverflow = '';
+      let prdBodyPadding = '';
+      function updatePrdNavigation() {
+        const readingTop = prdReadingPane.getBoundingClientRect().top;
+        let currentId = prdHeadings.length ? prdHeadings[0].id : '';
+        for (const heading of prdHeadings) {
+          if (heading.getBoundingClientRect().top <= readingTop + 32) currentId = heading.id;
+        }
+        prdNavigation.querySelectorAll('a').forEach(link => {
+          if (link.hash === '#' + currentId) link.setAttribute('aria-current','location');
+          else link.removeAttribute('aria-current');
+        });
+      }
+      function openPrd() {
+        if (prdDialog.open) return;
+        closeMenu();
+        if (historyDialog.open) historyDialog.close();
+        prdBodyOverflow = document.body.style.overflow;
+        prdBodyPadding = document.body.style.paddingRight;
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        if (scrollbarWidth > 0) document.body.style.paddingRight = scrollbarWidth + 'px';
+        document.body.style.overflow = 'hidden';
+        document.body.classList.add('prd-modal-open');
+        $('prdActionStatus').textContent = '';
+        prdDialog.showModal();
+        prdReadingPane.scrollTo({top:0,left:0,behavior:'instant'});
+        updatePrdNavigation();
+        $('closePrdButton').focus({preventScroll:true});
+      }
+      function closePrd() {
+        if (prdDialog.open) prdDialog.close();
+      }
+      $('prdButton').addEventListener('click',openPrd);
+      $('closePrdButton').addEventListener('click',closePrd);
+      prdDialog.addEventListener('cancel',event => {
+        event.preventDefault();
+        event.stopPropagation();
+        closePrd();
+      });
+      prdDialog.addEventListener('close',() => {
+        document.body.classList.remove('prd-modal-open');
+        document.body.style.overflow = prdBodyOverflow;
+        document.body.style.paddingRight = prdBodyPadding;
+        $('prdButton').focus({preventScroll:true});
+      });
+      prdDialog.addEventListener('click',event => {
+        const rect = prdDialog.getBoundingClientRect();
+        if (event.target === prdDialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) closePrd();
+      });
+      prdDialog.addEventListener('keydown',event => {
+        if (event.key !== 'Tab') return;
+        const items = [...prdDialog.querySelectorAll('button:not([disabled]),a[href],[tabindex="0"]')].filter(item => item.getClientRects().length);
+        if (!items.length) return;
+        const first = items[0], last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) {event.preventDefault();last.focus();}
+        else if (!event.shiftKey && document.activeElement === last) {event.preventDefault();first.focus();}
+      });
+      prdNavigation.addEventListener('click',event => {
+        const link = event.target.closest('a[href^="#prd-section-"]');
+        if (!link) return;
+        event.preventDefault();
+        const heading = document.getElementById(link.hash.slice(1));
+        if (!heading) return;
+        heading.focus({preventScroll:true});
+        heading.scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+      });
+      prdReadingPane.addEventListener('scroll',updatePrdNavigation,{passive:true});
+      $('copyPrdButton').addEventListener('click',async () => {
+        const button = $('copyPrdButton');
+        button.disabled = true;
+        try {
+          if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('Clipboard unavailable');
+          await navigator.clipboard.writeText(prdMarkdown);
+          $('prdActionStatus').textContent = 'PRD全文已复制';
+        } catch (_) {
+          $('prdActionStatus').textContent = '复制失败，请使用下载PRD';
+        } finally {button.disabled = false;if (prdDialog.open) button.focus({preventScroll:true});}
+      });
+      $('downloadPrdButton').addEventListener('click',() => {
+        const blob = new Blob([prdMarkdown],{type:'text/markdown;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'PRD-AI评价智能体.md';
+        prdDialog.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url),1000);
+        $('prdActionStatus').textContent = '已发起完整PRD下载';
+      });
+      document.querySelectorAll('[data-demo-action]').forEach(button => button.addEventListener('click',() => showToast(button.dataset.demoAction)));
+      update();
+    })();
+  </script>
+</body>
+</html>
